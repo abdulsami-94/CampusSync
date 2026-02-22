@@ -31,12 +31,12 @@ def check_escalations():
 @auth.route("/register", methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('citizen.dashboard'))
+        return redirect(url_for('student.dashboard'))
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
-        role = request.form.get('role', 'citizen') # Allow selecting role for demo purposes, normally restricted
+        role = 'student' # Allow selecting role for demo purposes, normally restricted
 
         user_exists = User.query.filter_by(email=email).first()
         if user_exists:
@@ -59,7 +59,7 @@ def login():
         elif current_user.role == 'staff':
             return redirect(url_for('staff.dashboard'))
         else:
-            return redirect(url_for('citizen.dashboard'))
+            return redirect(url_for('student.dashboard'))
 
     if request.method == 'POST':
         email = request.form.get('email')
@@ -76,7 +76,7 @@ def login():
             elif user.role == 'staff':
                 return redirect(url_for('staff.dashboard'))
             else:
-                return redirect(url_for('citizen.dashboard'))
+                return redirect(url_for('student.dashboard'))
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('auth/login.html', title='Login')

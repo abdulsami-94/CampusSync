@@ -11,7 +11,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
-    role = db.Column(db.String(20), nullable=False, default='citizen') # 'citizen', 'admin', 'staff'
+    role = db.Column(db.String(20), nullable=False, default='student') # 'student', 'admin', 'staff'
     complaints = db.relationship('Complaint', backref='author', lazy=True, foreign_keys='Complaint.user_id')
     assigned_complaints = db.relationship('Complaint', backref='assignee', lazy=True, foreign_keys='Complaint.assigned_to')
 

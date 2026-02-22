@@ -25,7 +25,7 @@
             <div class="card-body">
                 <h5 class="card-title text-truncate" title="{{ complaint.title }}">{{ complaint.title }}</h5>
                 <p class="card-text text-muted small mb-2"><i class="bi bi-geo-alt"></i> {{ complaint.location }}</p>
-                <p class="card-text small text-muted"><strong>Citizen:</strong> {{ complaint.author.username }}</p>
+                <p class="card-text small text-muted"><strong>Student:</strong> {{ complaint.author.username }}</p>
                 <p class="card-text text-truncate">{{ complaint.description }}</p>
 
                 {% if complaint.image_file %}
@@ -36,7 +36,7 @@
             <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
                 <small class="text-muted">{{ complaint.date_posted.strftime('%Y-%m-%d') }}</small>
                 <div>
-                    <!-- Link to Citizen View since it works universally for info, but for this demo, Update takes priority -->
+                    <!-- Link to Student View since it works universally for info, but for this demo, Update takes priority -->
                     <a href="{{ url_for('staff.update_complaint', complaint_id=complaint.id) }}"
                         class="btn btn-sm btn-primary">Update Task</a>
                 </div>

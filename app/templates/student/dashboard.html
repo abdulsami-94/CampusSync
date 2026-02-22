@@ -3,7 +3,7 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">My Complaints</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
-        <a href="{{ url_for('citizen.new_complaint') }}" class="btn btn-sm btn-primary">
+        <a href="{{ url_for('student.new_complaint') }}" class="btn btn-sm btn-primary">
             Register New Complaint
         </a>
     </div>
@@ -35,10 +35,10 @@
             <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
                 <small class="text-muted">{{ complaint.date_posted.strftime('%Y-%m-%d %H:%M') }}</small>
                 <div>
-                    <a href="{{ url_for('citizen.view_complaint', complaint_id=complaint.id) }}"
+                    <a href="{{ url_for('student.view_complaint', complaint_id=complaint.id) }}"
                         class="btn btn-sm btn-outline-primary">View</a>
                     {% if complaint.status == 'Pending' %}
-                    <a href="{{ url_for('citizen.edit_complaint', complaint_id=complaint.id) }}"
+                    <a href="{{ url_for('student.edit_complaint', complaint_id=complaint.id) }}"
                         class="btn btn-sm btn-outline-secondary">Edit</a>
                     {% endif %}
                 </div>
@@ -51,7 +51,7 @@
 <div class="text-center py-5 text-muted">
     <h4>No complaints registered yet.</h4>
     <p>If you have any civic issues, you can register a new complaint.</p>
-    <a href="{{ url_for('citizen.new_complaint') }}" class="btn btn-primary mt-2">Get Started</a>
+    <a href="{{ url_for('student.new_complaint') }}" class="btn btn-primary mt-2">Get Started</a>
 </div>
 {% endif %}
 {% endblock %}

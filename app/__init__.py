@@ -25,8 +25,8 @@ def create_app(config_class=Config):
     from app.auth import auth as auth_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
 
-    from app.citizen import citizen as citizen_bp
-    app.register_blueprint(citizen_bp)
+    from app.student import student as student_bp
+    app.register_blueprint(student_bp)
 
     from app.admin import admin as admin_bp
     app.register_blueprint(admin_bp, url_prefix='/admin')

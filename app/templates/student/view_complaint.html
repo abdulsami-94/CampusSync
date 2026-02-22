@@ -45,11 +45,11 @@
                     alt="Complaint Image" style="max-height: 400px; object-fit: contain;">
                 {% endif %}
             </div>
-            {% if current_user.role == 'citizen' %}
+            {% if current_user.role == 'student' %}
             <div class="card-footer">
-                <a href="{{ url_for('citizen.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+                <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
                 {% if complaint.status == 'Pending' %}
-                <a href="{{ url_for('citizen.edit_complaint', complaint_id=complaint.id) }}"
+                <a href="{{ url_for('student.edit_complaint', complaint_id=complaint.id) }}"
                     class="btn btn-warning">Edit</a>
                 {% endif %}
             </div>

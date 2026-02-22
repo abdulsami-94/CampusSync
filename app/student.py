@@ -6,7 +6,7 @@ from app import db
 from app.models import Complaint, ComplaintHistory
 from werkzeug.utils import secure_filename
 
-citizen = Blueprint('citizen', __name__)
+student = Blueprint('student', __name__)
 
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8)
@@ -16,19 +16,19 @@ def save_picture(form_picture):
     form_picture.save(picture_path)
     return picture_fn
 
-@citizen.route("/")
-@citizen.route("/dashboard")
+@student.route("/")
+@student.route("/dashboard")
 @login_required
 def dashboard():
-    if current_user.role != 'citizen':
+    if current_user.role != 'student':
         return redirect(url_for('auth.login'))
     complaints = Complaint.query.filter_by(author=current_user).order_by(Complaint.date_posted.desc()).all()
-    return render_template('citizen/dashboard.html', title='My Complaints', complaints=complaints)
+    return render_template('student/dashboard.html', title='My Complaints', complaints=complaints)
 
-@citizen.route("/complaint/new", methods=['GET', 'POST'])
+@student.route("/complaint/new", methods=['GET', 'POST'])
 @login_required
 def new_complaint():
-    if current_user.role != 'citizen':
+    if current_user.role != 'student':
         return redirect(url_for('auth.login'))
     
     if request.method == 'POST':
@@ -56,11 +56,11 @@ def new_complaint():
         db.session.commit()
 
         flash('Your complaint has been registered!', 'success')
-        return redirect(url_for('citizen.dashboard'))
+        return redirect(url_for('student.dashboard'))
         
-    return render_template('citizen/new_complaint.html', title='Register Complaint')
+    return render_template('student/new_complaint.html', title='Register Complaint')
 
-@citizen.route("/complaint/<int:complaint_id>/edit", methods=['GET', 'POST'])
+@student.route("/complaint/<int:complaint_id>/edit", methods=['GET', 'POST'])
 @login_required
 def edit_complaint(complaint_id):
     complaint = Complaint.query.get_or_404(complaint_id)
@@ -68,7 +68,7 @@ def edit_complaint(complaint_id):
         abort(403)
     if complaint.status != 'Pending':
         flash('Only pending complaints can be edited.', 'danger')
-        return redirect(url_for('citizen.dashboard'))
+        return redirect(url_for('student.dashboard'))
 
     if request.method == 'POST':
         complaint.title = request.form.get('title')
@@ -85,14 +85,14 @@ def edit_complaint(complaint_id):
 
         db.session.commit()
         flash('Your complaint has been updated!', 'success')
-        return redirect(url_for('citizen.dashboard'))
+        return redirect(url_for('student.dashboard'))
 
-    return render_template('citizen/edit_complaint.html', title='Edit Complaint', complaint=complaint)
+    return render_template('student/edit_complaint.html', title='Edit Complaint', complaint=complaint)
 
-@citizen.route("/complaint/<int:complaint_id>")
+@student.route("/complaint/<int:complaint_id>")
 @login_required
 def view_complaint(complaint_id):
     complaint = Complaint.query.get_or_404(complaint_id)
-    if complaint.author != current_user and current_user.role == 'citizen':
+    if complaint.author != current_user and current_user.role == 'student':
         abort(403)
-    return render_template('citizen/view_complaint.html', title=complaint.title, complaint=complaint)
+    return render_template('student/view_complaint.html', title=complaint.title, complaint=complaint)
