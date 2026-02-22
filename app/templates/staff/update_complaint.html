@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-7">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Complaint Details #{{ complaint.id }}</h5>
+            </div>
+            <div class="card-body">
+                <h6>{{ complaint.title }}</h6>
+                <div class="mb-2">
+                    <span class="badge bg-secondary">{{ complaint.category }}</span>
+                    <span class="badge bg-dark">Priority: {{ complaint.priority }}</span>
+                </div>
+                <p><strong>Citizen:</strong> {{ complaint.author.username }} ({{ complaint.author.email }})</p>
+                <p><strong>Location:</strong> {{ complaint.location }}</p>
+                <p><strong>Description:</strong></p>
+                <p class="bg-light p-3 rounded" style="white-space: pre-wrap;">{{ complaint.description }}</p>
+
+                {% if complaint.image_file %}
+                <p><strong>Evidence:</strong></p>
+                <img src="{{ url_for('static', filename='uploads/' + complaint.image_file) }}"
+                    class="img-fluid rounded border">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Form Column -->
+    <div class="col-md-5">
+        <div class="card shadow-sm mb-4 border-primary">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Update Status</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Current Status</label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="In Progress" {% if complaint.status=='In Progress' %}selected{% endif %}>In
+                                Progress</option>
+                            <option value="Resolved" {% if complaint.status=='Resolved' %}selected{% endif %}>Resolved
+                            </option>
+                            <option value="Escalated" {% if complaint.status=='Escalated' %}selected{% endif %}>
+                                Escalated</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Resolution / Update Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="4"
+                            placeholder="Briefly describe what action was taken..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mb-2">Save Update</button>
+                    <a href="{{ url_for('staff.dashboard') }}" class="btn btn-outline-secondary w-100">Cancel</a>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h6 class="mb-0">Recent History</h6>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {% for h in complaint.history|sort(attribute='date_changed', reverse=True) %}
+                    {% if loop.index <= 3 %} <li class="list-group-item">
+                        <div class="d-flex justify-content-between w-100">
+                            <strong>{{ h.new_status }}</strong>
+                            <small class="text-muted">{{ h.date_changed.strftime('%Y-%m-%d %H:%M') }}</small>
+                        </div>
+                        {% if h.notes %}
+                        <p class="mb-0 small text-muted">{{ h.notes }}</p>
+                        {% endif %}
+                        </li>
+                        {% endif %}
+                        {% else %}
+                        <li class="list-group-item text-muted">No history found.</li>
+                        {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

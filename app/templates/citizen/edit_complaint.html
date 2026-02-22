@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">Edit Complaint</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Subject/Title</label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{ complaint.title }}"
+                            required>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="Roads & Streets" {% if complaint.category=='Roads & Streets' %}selected{%
+                                    endif %}>Roads & Streets</option>
+                                <option value="Water Supply" {% if complaint.category=='Water Supply' %}selected{% endif
+                                    %}>Water Supply</option>
+                                <option value="Electricity" {% if complaint.category=='Electricity' %}selected{% endif
+                                    %}>Electricity</option>
+                                <option value="Sanitation & Garbage" {% if complaint.category=='Sanitation & Garbage'
+                                    %}selected{% endif %}>Sanitation & Garbage</option>
+                                <option value="Public Transport" {% if complaint.category=='Public Transport'
+                                    %}selected{% endif %}>Public Transport</option>
+                                <option value="Other" {% if complaint.category=='Other' %}selected{% endif %}>Other
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="priority" class="form-label">Priority Level</label>
+                            <select class="form-select" id="priority" name="priority">
+                                <option value="Low" {% if complaint.priority=='Low' %}selected{% endif %}>Low</option>
+                                <option value="Medium" {% if complaint.priority=='Medium' %}selected{% endif %}>Medium
+                                </option>
+                                <option value="High" {% if complaint.priority=='High' %}selected{% endif %}>High
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location Details</label>
+                        <input type="text" class="form-control" id="location" name="location"
+                            value="{{ complaint.location }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Detailed Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="5"
+                            required>{{ complaint.description }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Update Image (Optional)</label>
+                        <input class="form-control" type="file" id="image" name="image"
+                            accept="image/png, image/jpeg, image/jpg">
+                        <small class="text-muted">Current image: {{ complaint.image_file if complaint.image_file else
+                            'None' }}</small>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <a href="{{ url_for('citizen.dashboard') }}" class="btn btn-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-warning">Update Complaint</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

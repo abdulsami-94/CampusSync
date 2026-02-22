@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">{{ complaint.title }}</h4>
+                <span class="badge bg-secondary">{{ complaint.category }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Date Posted:</strong> {{ complaint.date_posted.strftime('%Y-%m-%d %H:%M') }}
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <strong>Status:</strong>
+                        {% if complaint.status == 'Pending' %}
+                        <span class="badge bg-warning text-dark">{{ complaint.status }}</span>
+                        {% elif complaint.status == 'In Progress' %}
+                        <span class="badge bg-info text-dark">{{ complaint.status }}</span>
+                        {% elif complaint.status == 'Resolved' %}
+                        <span class="badge bg-success">{{ complaint.status }}</span>
+                        {% else %}
+                        <span class="badge bg-danger">{{ complaint.status }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Priority:</strong> {{ complaint.priority }}
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <strong>Location:</strong> {{ complaint.location }}
+                    </div>
+                </div>
+
+                <hr>
+                <h5>Description</h5>
+                <p style="white-space: pre-wrap;">{{ complaint.description }}</p>
+
+                {% if complaint.image_file %}
+                <hr>
+                <h5>Evidence</h5>
+                <img src="{{ url_for('static', filename='uploads/' + complaint.image_file) }}" class="img-fluid rounded"
+                    alt="Complaint Image" style="max-height: 400px; object-fit: contain;">
+                {% endif %}
+            </div>
+            {% if current_user.role == 'citizen' %}
+            <div class="card-footer">
+                <a href="{{ url_for('citizen.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+                {% if complaint.status == 'Pending' %}
+                <a href="{{ url_for('citizen.edit_complaint', complaint_id=complaint.id) }}"
+                    class="btn btn-warning">Edit</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-dark">
+                <h5 class="mb-0">Status History</h5>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {% for h in complaint.history|sort(attribute='date_changed', reverse=True) %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between w-100">
+                            <h6 class="mb-1">{{ h.new_status }}</h6>
+                            <small class="text-muted">{{ h.date_changed.strftime('%Y-%m-%d %H:%M') }}</small>
+                        </div>
+                        {% if h.notes %}
+                        <p class="mb-1 small">Note: {{ h.notes }}</p>
+                        {% endif %}
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted text-center pt-3 pb-3">No history recorded yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Create CivicSync Account</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required autofocus>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <!-- Role selection for demonstration purposes -->
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role (Demo feature)</label>
+                        <select class="form-select" id="role" name="role">
+                            <option value="citizen">Citizen</option>
+                            <option value="staff">Staff</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <small class="text-muted">Already Have An Account? <a href="{{ url_for('auth.login') }}">Sign
+                        In</a></small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
