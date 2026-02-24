@@ -1,44 +1,149 @@
-# CampusSync: College Campus Issue Management System
+# CampusSync - College Complaint Management System
 
-## 1. Project Title
-**CampusSync: A Centralised College Campus Issue Management System**
+A Flask-based web application for managing student complaints in educational institutions, specifically designed for ASM CSIT college viva presentation.
 
-## 2. Project Description
-CampusSync is a web-based reporting and management framework designed to streamline the resolution of infrastructural and academic issues within a university campus environment. The system addresses the inefficiencies of traditional, paper-based, or decentralised reporting mechanisms by providing a unified digital platform. It facilitates communication between students, faculty (staff), and administration, ensuring accountability, transparency, and timely resolution of reported issues such as laboratory equipment malfunctions, classroom maintenance, and hostel infrastructure problems.
+## Features
 
-## 3. Features
-* **Role-Based Access Control (RBAC):** Distinct interfaces and privileges for Administrators, Staff/Maintenance, and Students.
-* **Centralised Issue Submission:** A streamlined portal for students to submit detailed complaints, including categorical classification, priority designation, and location tracking.
-* **Algorithmic Duplicate Prevention:** Intelligent filtering mechanism that cross-references new submissions against existing unresolved cases based on location and title clustering to prevent database redundancy.
-* **Lifecycle State Tracking:** Real-time visibility into the status of an issue transitioning from 'Pending' through 'In Progress' to 'Resolved'.
-* **Automated Email Notifications:** Integration with SMTP protocols to dispatch automated resolution confirmations to the original reporter.
-* **Historical Audit Trail:** Comprehensive logging of all status modifications for administrative oversight and performance analytics.
+- **Role-based Access Control**: Three user roles - Admin, Staff, and Student
+- **Complaint Workflow**: Submit → Assign → Resolve complaint lifecycle
+- **Email Domain Restriction**: Only @asmedu.org emails allowed for ASM CSIT branding
+- **Soft Delete**: Admin can delete complaints without permanent data loss
+- **File Uploads**: Support for complaint evidence attachments
+- **Responsive UI**: Bootstrap-based modern interface
 
-## 4. Tech Stack
-* **Frontend:** HTML5, CSS3, Bootstrap 5 (Responsive Design Pattern)
-* **Backend:** Python 3.11+, Flask (Micro web framework)
-* **Database Management:** SQLite (Development) / PostgreSQL (Production) mapped via SQLAlchemy ORM
-* **Authentication & Security:** Flask-Login (Session management), Flask-Bcrypt (Password hashing), Flask-WTF (CSRF Protection)
-* **Communication:** Flask-Mail (SMTP notification routing)
-* **Deployment Infrastructure:** Gunicorn WSGI, Render Cloud Hosting Platform
+## Technology Stack
 
-## 5. System Architecture Overview
-The application follows a Model-View-Controller (MVC) architectural pattern:
-* **Model:** SQLAlchemy manages the object-relational mapping, representing the `User`, `Complaint`, and `ComplaintHistory` schemas.
-* **View:** Jinja2 templating engine renders dynamic HTML pages, populating them with contextual data tailored to the active user's role.
-* **Controller:** Flask Blueprints (`auth.py`, `student.py`, `staff.py`, `admin.py`) dictate routing logic, handle HTTP requests, enforce access restrictions, and manipulate the Model layer.
+- **Backend**: Flask 3.0, SQLAlchemy, SQLite
+- **Authentication**: Flask-Login, Flask-Bcrypt
+- **Forms**: Flask-WTF with CSRF protection
+- **Frontend**: Bootstrap 5, HTML5
+- **File Handling**: UUID-based secure uploads
 
-## 6. Database Schema Overview
-The relational database comprises three primary entities:
+## Installation & Setup
 
-1. **User Model:** 
-   * Stores credential data (`username`, `email`, hashed `password`).
-   * Enforces role distinctions (`student`, `staff`, `admin`).
-   * Maintains foreign key relationships to complaints initiated or assigned.
+### Prerequisites
+- Python 3.9+
+- pip package manager
 
-2. **Complaint Model:**
-   * Serves as the core entity, holding the `title`, `description`, `category` (e.g., Hostel, Lab), `priority`, and geographic `location`.
-   * Tracks progression timestamps (`date_posted`, `resolved_at`) and current `status` enum.
+### Quick Start
+
+1. **Clone and navigate to the project**:
+   ```bash
+   cd CampusSync
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Initialize the database**:
+   ```bash
+   python seed_db.py
+   ```
+
+4. **Run the application**:
+   ```bash
+   python run.py
+   ```
+
+5. **Access the application**:
+   - Open http://localhost:8000 in your browser
+   - Login with demo credentials (see below)
+
+## Demo Credentials
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@asmedu.org | admin123 |
+| Staff | it.support@asmedu.org | staff123 |
+| Student | alice.cs@asmedu.org | student123 |
+
+## User Roles & Permissions
+
+### Student
+- Register new complaints with category, priority, location, and description
+- Upload evidence files
+- View and edit pending complaints
+- Track complaint status
+
+### Staff
+- View assigned complaints
+- Update complaint status (In Progress → Resolved)
+- Access complaint details and evidence
+
+### Admin
+- View all complaints with filtering
+- Assign complaints to staff members
+- Soft delete complaints
+- Manage user roles (view-only in demo)
+
+## Complaint Categories
+
+- Roads & Streets
+- Water Supply
+- Electricity
+- Sanitation & Garbage
+- Public Transport
+- Other
+
+## Complaint Status Workflow
+
+1. **Pending**: New complaint submitted by student
+2. **In Progress**: Assigned to staff member
+3. **Resolved**: Completed by staff
+
+## Project Structure
+
+```
+CampusSync/
+├── app/
+│   ├── __init__.py          # Flask application factory
+│   ├── models.py            # Database models (User, Complaint)
+│   ├── auth.py              # Authentication blueprint
+│   ├── student.py           # Student dashboard blueprint
+│   ├── admin.py             # Admin dashboard blueprint
+│   ├── staff.py             # Staff dashboard blueprint
+│   ├── static/              # CSS, JS, uploaded files
+│   └── templates/           # Jinja2 templates
+├── config.py                # Application configuration
+├── run.py                   # Development server entry point
+├── seed_db.py               # Database initialization script
+└── requirements.txt         # Python dependencies
+```
+
+## Key Features Demonstrated
+
+- **Flask Application Factory Pattern**: Modular, scalable architecture
+- **SQLAlchemy ORM**: Database abstraction and relationships
+- **Blueprint Organization**: Clean separation of concerns
+- **Form Validation**: WTForms with CSRF protection
+- **File Upload Security**: UUID naming, type validation
+- **Role-based Permissions**: Flask-Login integration
+- **Responsive Design**: Bootstrap framework
+- **Soft Delete Pattern**: Data integrity preservation
+
+## Development Notes
+
+- Uses SQLite for simplicity (easily replaceable with PostgreSQL for production)
+- Email domain validation ensures ASM CSIT branding
+- CSRF protection on all forms
+- Session-based authentication
+- Error handling with custom 403/404/500 pages
+
+## For Viva Presentation
+
+This application demonstrates:
+- Full-stack web development with Flask
+- Database design and ORM usage
+- User authentication and authorization
+- File handling and security
+- Modern web development practices
+- Clean, maintainable code architecture
+
+## License
+
+This project is developed for educational purposes as part of ASM CSIT college curriculum.
    * Links to the `User` model via `author_id` and an optional `assigned_to` key.
 
 3. **ComplaintHistory Model:**
