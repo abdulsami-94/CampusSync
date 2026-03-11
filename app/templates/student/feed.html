@@ -6,7 +6,7 @@
 
 <!-- Filter and Search -->
 <div class="card shadow-sm mb-4">
-    <div class="card-body bg-light rounded">
+    <div class="card-body bg-body-tertiary rounded">
         <form method="GET" action="{{ url_for('student.feed') }}" class="row gx-3 gy-2 align-items-center">
             <div class="col-sm-4">
                 <input type="text" class="form-control" name="search" placeholder="Search title or details..." value="{{ request.args.get('search', '') }}">

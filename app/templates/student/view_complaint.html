@@ -15,7 +15,7 @@
                         </button>
                     </form>
                     {% else %}
-                    <span class="badge bg-light text-dark border">👍 {{ complaint.upvotes|length }}</span>
+                    <span class="badge bg-body-tertiary text-body border">👍 {{ complaint.upvotes|length }}</span>
                     {% endif %}
                 </div>
             </div>
@@ -68,12 +68,7 @@
             {% endif %}
         </div>
     </div>
-
-    </div>
-
-    <!-- The original col-md-8 is still open, we just closed the card -->
-    <!-- But wait, we closed the col-md-8 before the comments. So I should remove the col-md-8 closing tag before comments or what? Let me check lines 71 to 104 -->
-    <!-- I'll just change the layout here: -->
+    <!-- Comments section below the complaint card inside the same left col-md-8 column -->
         <!-- Comments Card -->
         <div class="card shadow-sm mt-4 mb-4">
             <div class="card-header bg-secondary text-white">

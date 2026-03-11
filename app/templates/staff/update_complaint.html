@@ -15,7 +15,7 @@
                 <p><strong>Student:</strong> {{ complaint.author.username }} ({{ complaint.author.email }})</p>
                 <p><strong>Location:</strong> {{ complaint.location }}</p>
                 <p><strong>Description:</strong></p>
-                <p class="bg-light p-3 rounded" style="white-space: pre-wrap;">{{ complaint.description }}</p>
+                <p class="bg-body-tertiary p-3 rounded" style="white-space: pre-wrap;">{{ complaint.description }}</p>
 
                 {% if complaint.image_file %}
                 <p><strong>Evidence:</strong></p>
@@ -60,7 +60,7 @@
         </div>
 
         <div class="card shadow-sm">
-            <div class="card-header bg-light">
+            <div class="card-header bg-body-tertiary">
                 <h6 class="mb-0">Recent History</h6>
             </div>
             <div class="card-body p-0">
