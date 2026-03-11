@@ -12,7 +12,7 @@ class Config:
 
     # File uploads
     UPLOAD_FOLDER = os.path.join(basedir, 'uploads')
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB
+    # Removed MAX_CONTENT_LENGTH to disable size limit
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
     # CSRF Protection
