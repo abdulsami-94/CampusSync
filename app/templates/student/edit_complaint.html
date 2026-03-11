@@ -19,18 +19,16 @@
                         <div class="col-md-6">
                             <label for="category" class="form-label">Category</label>
                             <select class="form-select" id="category" name="category" required>
-                                <option value="Roads & Streets" {% if complaint.category=='Roads & Streets' %}selected{%
-                                    endif %}>Roads & Streets</option>
-                                <option value="Water Supply" {% if complaint.category=='Water Supply' %}selected{% endif
-                                    %}>Water Supply</option>
-                                <option value="Electricity" {% if complaint.category=='Electricity' %}selected{% endif
-                                    %}>Electricity</option>
-                                <option value="Sanitation & Garbage" {% if complaint.category=='Sanitation & Garbage'
-                                    %}selected{% endif %}>Sanitation & Garbage</option>
-                                <option value="Public Transport" {% if complaint.category=='Public Transport'
-                                    %}selected{% endif %}>Public Transport</option>
-                                <option value="Other" {% if complaint.category=='Other' %}selected{% endif %}>Other
-                                </option>
+                                <option value="Wi-Fi / Internet" {% if complaint.category=='Wi-Fi / Internet' %}selected{% endif %}>Wi-Fi / Internet</option>
+                                <option value="Classrooms" {% if complaint.category=='Classrooms' %}selected{% endif %}>Classrooms</option>
+                                <option value="Computer Labs" {% if complaint.category=='Computer Labs' %}selected{% endif %}>Computer Labs</option>
+                                <option value="Canteen" {% if complaint.category=='Canteen' %}selected{% endif %}>Canteen</option>
+                                <option value="Washrooms" {% if complaint.category=='Washrooms' %}selected{% endif %}>Washrooms</option>
+                                <option value="Library" {% if complaint.category=='Library' %}selected{% endif %}>Library</option>
+                                <option value="Hostel" {% if complaint.category=='Hostel' %}selected{% endif %}>Hostel</option>
+                                <option value="Sports Facilities" {% if complaint.category=='Sports Facilities' %}selected{% endif %}>Sports Facilities</option>
+                                <option value="Electricity" {% if complaint.category=='Electricity' %}selected{% endif %}>Electricity</option>
+                                <option value="Other" {% if complaint.category=='Other' %}selected{% endif %}>Other</option>
                             </select>
                         </div>
                         <div class="col-md-6">

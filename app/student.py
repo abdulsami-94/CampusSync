@@ -45,18 +45,31 @@ def dashboard():
     page = request.args.get(get_page_parameter(), type=int, default=1)
     per_page = 10
 
-    # Search functionality
+    # Search, Filter, Sort
     search = request.args.get('search', '')
     category_filter = request.args.get('category', '')
+    status_filter = request.args.get('status', '')
+    sort_by = request.args.get('sort', 'newest')
 
     query = Complaint.query.filter(Complaint.user_id == current_user.id, Complaint.is_deleted == False)
 
     if search:
-        query = query.filter(Complaint.title.contains(search))
+        query = query.filter(Complaint.title.contains(search) | Complaint.description.contains(search))
     if category_filter:
         query = query.filter(Complaint.category == category_filter)
+    if status_filter:
+        query = query.filter(Complaint.status == status_filter)
 
-    complaints = query.order_by(Complaint.date_posted.desc()).paginate(page=page, per_page=per_page, error_out=False)
+    if sort_by == 'oldest':
+        query = query.order_by(Complaint.date_posted.asc())
+    elif sort_by == 'upvoted':
+        from app.models import Upvote
+        from sqlalchemy import func
+        query = query.outerjoin(Upvote).group_by(Complaint.id).order_by(func.count(Upvote.id).desc(), Complaint.date_posted.desc())
+    else:
+        query = query.order_by(Complaint.date_posted.desc())
+
+    complaints = query.paginate(page=page, per_page=per_page, error_out=False)
     pagination = Pagination(page=page, total=complaints.total, per_page=per_page, css_framework='bootstrap5')
 
     return render_template('student/dashboard.html', title='My Complaints', complaints=complaints, pagination=pagination)
@@ -122,15 +135,89 @@ def edit_complaint(complaint_id):
     return render_template('student/edit_complaint.html', title='Edit Complaint', complaint=complaint)
 
 @student.route("/complaint/<int:complaint_id>")
-@student_required
+@login_required
 def view_complaint(complaint_id):
     """View complaint details."""
     complaint = Complaint.query.get_or_404(complaint_id)
 
-    if complaint.user_id != current_user.id or complaint.is_deleted:
+    if complaint.is_deleted:
         abort(403)
 
-    return render_template('student/view_complaint.html', title=complaint.title, complaint=complaint)
+    from app.models import Upvote
+    has_upvoted = False
+    if current_user.role == 'student':
+        has_upvoted = Upvote.query.filter_by(user_id=current_user.id, complaint_id=complaint.id).first() is not None
+
+    return render_template('student/view_complaint.html', title=complaint.title, complaint=complaint, has_upvoted=has_upvoted)
+
+@student.route("/feed")
+@student_required
+def feed():
+    search = request.args.get('search', '')
+    category_filter = request.args.get('category', '')
+    status_filter = request.args.get('status', '')
+    
+    page = request.args.get(get_page_parameter(), type=int, default=1)
+    per_page = 10
+
+    from app.models import Upvote
+    from sqlalchemy import func
+
+    query = Complaint.query.filter(Complaint.is_deleted == False)
+
+    if search:
+        query = query.filter(Complaint.title.contains(search) | Complaint.description.contains(search))
+    if category_filter:
+        query = query.filter(Complaint.category == category_filter)
+    if status_filter:
+        query = query.filter(Complaint.status == status_filter)
+
+    query = query.outerjoin(Upvote).group_by(Complaint.id).order_by(func.count(Upvote.id).desc(), Complaint.date_posted.desc())
+
+    complaints = query.paginate(page=page, per_page=per_page, error_out=False)
+    pagination = Pagination(page=page, total=complaints.total, per_page=per_page, css_framework='bootstrap5')
+
+    user_upvotes = {u.complaint_id for u in Upvote.query.filter_by(user_id=current_user.id).all()}
+
+    return render_template('student/feed.html', title='Browse Complaints', complaints=complaints, pagination=pagination, user_upvotes=user_upvotes)
+
+@student.route("/upvote/<int:complaint_id>", methods=['POST'])
+@student_required
+def upvote(complaint_id):
+    complaint = Complaint.query.get_or_404(complaint_id)
+    if complaint.is_deleted:
+        abort(404)
+        
+    from app.models import Upvote
+    existing = Upvote.query.filter_by(user_id=current_user.id, complaint_id=complaint.id).first()
+    
+    if existing:
+        db.session.delete(existing)
+        flash('Upvote removed.', 'info')
+    else:
+        new_upvote = Upvote(user_id=current_user.id, complaint_id=complaint.id)
+        db.session.add(new_upvote)
+        flash('Complaint upvoted!', 'success')
+        
+    db.session.commit()
+    return redirect(request.referrer or url_for('student.feed'))
+
+@student.route("/complaint/<int:complaint_id>/comment", methods=['POST'])
+@login_required
+def post_comment(complaint_id):
+    complaint = Complaint.query.get_or_404(complaint_id)
+    if complaint.is_deleted:
+        abort(404)
+        
+    body = request.form.get('body')
+    if body:
+        from app.models import Comment
+        comment = Comment(body=body, author_id=current_user.id, complaint_id=complaint.id)
+        db.session.add(comment)
+        db.session.commit()
+        flash('Comment posted!', 'success')
+        
+    return redirect(request.referrer or url_for('student.dashboard'))
 
 @student.route("/uploads/<filename>")
 @login_required

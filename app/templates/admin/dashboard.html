@@ -26,6 +26,19 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
+                        <p class="text-muted mb-1">Resolved this week</p>
+                        <h3 class="mb-0 text-success">{{ resolved_this_week }}</h3>
+                    </div>
+                    <span class="badge bg-success">✅</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
                         <p class="text-muted mb-1">Pending</p>
                         <h3 class="mb-0 text-warning">{{ pending_count }}</h3>
                     </div>
@@ -39,23 +52,10 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
-                        <p class="text-muted mb-1">In Progress</p>
-                        <h3 class="mb-0 text-info">{{ in_progress_count }}</h3>
+                        <p class="text-muted mb-1">Avg Resolution Time</p>
+                        <h3 class="mb-0 text-info">{{ avg_resolution_time }} d</h3>
                     </div>
-                    <span class="badge bg-info">🔄</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3 mb-3">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <p class="text-muted mb-1">Resolved</p>
-                        <h3 class="mb-0 text-success">{{ resolved_count }}</h3>
-                    </div>
-                    <span class="badge bg-success">✅</span>
+                    <span class="badge bg-info">⏳</span>
                 </div>
             </div>
         </div>
@@ -103,11 +103,15 @@
                 <label class="visually-hidden" for="category">Category</label>
                 <select class="form-select" id="category" name="category">
                     <option value="">All Categories</option>
-                    <option value="Roads & Streets" {% if request.args.get('category')=='Roads & Streets' %}selected{% endif %}>Roads & Streets</option>
-                    <option value="Water Supply" {% if request.args.get('category')=='Water Supply' %}selected{% endif %}>Water Supply</option>
+                    <option value="Wi-Fi / Internet" {% if request.args.get('category')=='Wi-Fi / Internet' %}selected{% endif %}>Wi-Fi / Internet</option>
+                    <option value="Classrooms" {% if request.args.get('category')=='Classrooms' %}selected{% endif %}>Classrooms</option>
+                    <option value="Computer Labs" {% if request.args.get('category')=='Computer Labs' %}selected{% endif %}>Computer Labs</option>
+                    <option value="Canteen" {% if request.args.get('category')=='Canteen' %}selected{% endif %}>Canteen</option>
+                    <option value="Washrooms" {% if request.args.get('category')=='Washrooms' %}selected{% endif %}>Washrooms</option>
+                    <option value="Library" {% if request.args.get('category')=='Library' %}selected{% endif %}>Library</option>
+                    <option value="Hostel" {% if request.args.get('category')=='Hostel' %}selected{% endif %}>Hostel</option>
+                    <option value="Sports Facilities" {% if request.args.get('category')=='Sports Facilities' %}selected{% endif %}>Sports Facilities</option>
                     <option value="Electricity" {% if request.args.get('category')=='Electricity' %}selected{% endif %}>Electricity</option>
-                    <option value="Sanitation & Garbage" {% if request.args.get('category')=='Sanitation & Garbage' %}selected{% endif %}>Sanitation & Garbage</option>
-                    <option value="Public Transport" {% if request.args.get('category')=='Public Transport' %}selected{% endif %}>Public Transport</option>
                     <option value="Other" {% if request.args.get('category')=='Other' %}selected{% endif %}>Other</option>
                 </select>
             </div>

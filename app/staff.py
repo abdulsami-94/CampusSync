@@ -3,6 +3,7 @@ from flask_login import current_user, login_required
 from app import db
 from app.models import Complaint
 from functools import wraps
+from datetime import datetime
 
 staff = Blueprint('staff', __name__)
 
@@ -47,6 +48,8 @@ def update_complaint(complaint_id):
 
         if new_status and new_status in ['In Progress', 'Resolved']:
             complaint.status = new_status
+            if new_status == 'Resolved':
+                complaint.date_resolved = datetime.utcnow()
             db.session.commit()
 
             flash('Complaint updated successfully!', 'success')

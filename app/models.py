@@ -23,12 +23,13 @@ class User(db.Model, UserMixin):
 class Complaint(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    category = db.Column(db.String(50), nullable=False)  # e.g. Roads, Water, Electricity, Sanitation
+    category = db.Column(db.String(50), nullable=False)  # Wi-Fi / Internet, Classrooms, etc.
     description = db.Column(db.Text, nullable=False)
     priority = db.Column(db.String(20), nullable=False, default='Low')  # Low, Medium, High
     location = db.Column(db.String(100), nullable=False)
     image_file = db.Column(db.String(100), nullable=True)  # UUID filename
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    date_resolved = db.Column(db.DateTime, nullable=True)
     status = db.Column(db.String(20), nullable=False, default='Pending')  # Pending, In Progress, Resolved
 
     # Foreign Keys
@@ -38,5 +39,24 @@ class Complaint(db.Model):
     # Soft delete for admin
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
 
+    upvotes = db.relationship('Upvote', backref='complaint', lazy=True, cascade='all, delete-orphan')
+    comments = db.relationship('Comment', backref='complaint_ref', lazy=True, cascade='all, delete-orphan')
+
     def __repr__(self):
         return f"Complaint('{self.title}', '{self.date_posted}', '{self.status}')"
+
+class Upvote(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    complaint_id = db.Column(db.Integer, db.ForeignKey('complaint.id'), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    __table_args__ = (db.UniqueConstraint('user_id', 'complaint_id', name='_user_complaint_uc'),)
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    complaint_id = db.Column(db.Integer, db.ForeignKey('complaint.id'), nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    body = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    author = db.relationship('User', backref=db.backref('comments', lazy=True))

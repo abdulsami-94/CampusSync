@@ -5,7 +5,7 @@ from app.models import Complaint, User
 from functools import wraps
 from sqlalchemy import func
 from flask_paginate import Pagination, get_page_parameter
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 
 admin = Blueprint('admin', __name__)
@@ -51,6 +51,28 @@ def dashboard():
     # Analytics - Status breakdown
     total_complaints = Complaint.query.filter(Complaint.is_deleted == False).count()
     pending_count = Complaint.query.filter(Complaint.status == 'Pending', Complaint.is_deleted == False).count()
+    
+    # New Analytics
+    one_week_ago = datetime.utcnow() - timedelta(days=7)
+    resolved_this_week = Complaint.query.filter(
+        Complaint.status == 'Resolved',
+        Complaint.is_deleted == False,
+        Complaint.date_resolved >= one_week_ago
+    ).count()
+
+    resolved_complaints = Complaint.query.filter(
+        Complaint.status == 'Resolved',
+        Complaint.is_deleted == False,
+        Complaint.date_resolved != None
+    ).all()
+
+    avg_resolution_time = 0
+    if resolved_complaints:
+        total_days = sum((c.date_resolved - c.date_posted).days for c in resolved_complaints)
+        # Avoid displaying 0 for issues resolved same-day by using max(.., 1) or decimals if needed
+        # Let's show single decimal precision:
+        avg_resolution_time = round(total_days / len(resolved_complaints), 1)
+
     in_progress_count = Complaint.query.filter(Complaint.status == 'In Progress', Complaint.is_deleted == False).count()
     resolved_count = Complaint.query.filter(Complaint.status == 'Resolved', Complaint.is_deleted == False).count()
 
@@ -77,7 +99,8 @@ def dashboard():
                            complaints=complaints, staff_members=staff_members,
                            pagination=pagination, total_complaints=total_complaints,
                            pending_count=pending_count, in_progress_count=in_progress_count,
-                           resolved_count=resolved_count,
+                           resolved_count=resolved_count, resolved_this_week=resolved_this_week,
+                           avg_resolution_time=avg_resolution_time,
                            status_counts_json=status_counts_json,
                            category_counts_json=category_counts_json)
 
