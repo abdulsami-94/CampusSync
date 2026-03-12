@@ -7,9 +7,10 @@
 </div>
 
 <!-- Statistics Cards Row -->
-<div class="row mb-4">
+<!-- Statistics Cards Row -->
+<div class="row mb-4 dashboard-cards-container">
     <div class="col-md-3 mb-3">
-        <div class="card shadow-sm border-0">
+        <div class="card shadow-sm border-0 hover-card">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
@@ -21,8 +22,9 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3 mb-3">
-        <div class="card shadow-sm border-0">
+        <div class="col-md-3 mb-3">
+        <!-- Made clickable to open Resolved Modal -->
+        <div class="card shadow-sm border-0 hover-card" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#resolvedModal">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
@@ -35,7 +37,8 @@
         </div>
     </div>
     <div class="col-md-3 mb-3">
-        <div class="card shadow-sm border-0">
+        <!-- Made clickable to open Pending Modal -->
+        <div class="card shadow-sm border-0 hover-card" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#pendingModal">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
@@ -47,8 +50,9 @@
             </div>
         </div>
     </div>
+
     <div class="col-md-3 mb-3">
-        <div class="card shadow-sm border-0">
+        <div class="card shadow-sm border-0 hover-card">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
@@ -61,6 +65,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Charts Row -->
 <div class="row mb-4">
@@ -144,13 +149,13 @@
                 </thead>
                 <tbody>
                     {% for complaint in complaints %}
-                    <tr>
+                    <!-- Added cursor-pointer, data-bs-toggle, and data-bs-target directly to the TR -->
+                    <tr style="cursor: pointer;" class="align-middle" data-bs-toggle="modal" data-bs-target="#viewModal{{ complaint.id }}">
                         <td>#{{ complaint.id }}</td>
                         <td>
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#viewModal{{ complaint.id }}" class="text-decoration-none">
-                                <strong class="text-body">{{ complaint.title }}</strong><br>
-                                <small class="text-muted">{{ complaint.category }}</small>
-                            </a>
+                            <!-- Removed the <a> tag since the whole row is clickable now -->
+                            <strong class="text-body">{{ complaint.title }}</strong><br>
+                            <small class="text-muted">{{ complaint.category }}</small>
                         </td>
                         <td>
                             {% if complaint.status == 'Pending' %}
@@ -165,16 +170,18 @@
                         <td>{{ complaint.author.username }}</td>
                         <td>{{ complaint.assignee.username if complaint.assignee else 'Unassigned' }}</td>
                         <td>
+                            <!-- Added onclick="event.stopPropagation();" to these buttons -->
+                            <!-- This prevents the row click from triggering when we click a specific action button -->
                             <button type="button" class="btn btn-sm btn-outline-info me-1" data-bs-toggle="modal"
-                                data-bs-target="#viewModal{{ complaint.id }}">
+                                data-bs-target="#viewModal{{ complaint.id }}" onclick="event.stopPropagation();">
                                 View
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal"
-                                data-bs-target="#assignModal{{ complaint.id }}">
+                                data-bs-target="#assignModal{{ complaint.id }}" onclick="event.stopPropagation();">
                                 Assign
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                                data-bs-target="#deleteModal{{ complaint.id }}">
+                                data-bs-target="#deleteModal{{ complaint.id }}" onclick="event.stopPropagation();">
                                 Delete
                             </button>
                         </td>
@@ -290,6 +297,73 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+<!-- Pending Complaints Summary Modal -->
+<div class="modal fade" id="pendingModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title text-dark">Pending Complaints</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="list-group list-group-flush">
+                    {% set pending_found = false %}
+                    {% for complaint in complaints %}
+                        {% if complaint.status == 'Pending' %}
+                            {% set pending_found = true %}
+                            <a href="#" class="list-group-item list-group-item-action" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#viewModal{{ complaint.id }}">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1 fw-bold">#{{ complaint.id }} - {{ complaint.title }}</h6>
+                                    <small class="text-muted">{{ complaint.date_posted.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                <p class="mb-1 text-truncate">{{ complaint.description }}</p>
+                                <small class="text-danger">Priority: {{ complaint.priority }}</small>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if not pending_found %}
+                        <div class="p-4 text-center text-muted">No pending complaints at the moment!</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resolved Complaints Summary Modal -->
+<div class="modal fade" id="resolvedModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Resolved Complaints</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="list-group list-group-flush">
+                    {% set resolved_found = false %}
+                    {% for complaint in complaints %}
+                        {% if complaint.status == 'Resolved' %}
+                            {% set resolved_found = true %}
+                            <a href="#" class="list-group-item list-group-item-action" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#viewModal{{ complaint.id }}">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1 fw-bold">#{{ complaint.id }} - {{ complaint.title }}</h6>
+                                    <small class="text-muted">{{ complaint.date_posted.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                <p class="mb-1 text-truncate">{{ complaint.description }}</p>
+                                <small class="text-muted">Assigned to: {{ complaint.assignee.username if complaint.assignee else 'Unknown' }}</small>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if not resolved_found %}
+                        <div class="p-4 text-center text-muted">No resolved complaints found in the currently loaded list.</div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 </div>
