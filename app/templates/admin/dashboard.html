@@ -371,8 +371,9 @@
 <!-- Chart.js Script -->
 <script>
     // Parse JSON data from Flask
-    const statusData = {{ status_counts_json | safe }};
-    const categoryData = {{ category_counts_json | safe }};
+    const statusDataRaw = '{{ status_counts_json | safe }}';
+    const categoryDataRaw = '{{ category_counts_json | safe }}';
+
 
     // Status Chart (Pie Chart)
     const statusCtx = document.getElementById('statusChart').getContext('2d');
