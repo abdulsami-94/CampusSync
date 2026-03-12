@@ -38,6 +38,17 @@ def save_picture(form_picture):
     return unique_filename
 
 @student.route("/")
+def landing():
+    """Public landing page. Redirect authenticated users to their dashboard."""
+    if current_user.is_authenticated:
+        if current_user.role == 'admin':
+            return redirect(url_for('admin.dashboard'))
+        elif current_user.role == 'staff':
+            return redirect(url_for('staff.dashboard'))
+        else:
+            return redirect(url_for('student.dashboard'))
+    return render_template('index.html')
+
 @student.route("/dashboard")
 @student_required
 def dashboard():

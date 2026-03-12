@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusSync — Infrastructure that listens</title>
+  <meta name="description" content="Report campus infrastructure issues, track resolutions in real time, and hold your institution accountable — all in one place.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --white: #ffffff;
+      --off:   #f5f4f0;
+      --stone: #e8e6e0;
+      --mid:   #9a9690;
+      --ink:   #1a1916;
+      --accent:      #2563eb;
+      --accent-soft: #eff4ff;
+      --warn:  #dc7633;
+      --green: #16a34a;
+      --radius: 16px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--white);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ═══════════ NAV ═══════════ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+      animation: fadeDown 0.6s ease both;
+    }
+
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex; gap: 32px; list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.875rem; font-weight: 400;
+      color: #5a5750; text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    .nav-cta { display: flex; align-items: center; gap: 12px; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 20px; border-radius: 100px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem; font-weight: 500;
+      text-decoration: none; cursor: pointer;
+      transition: all 0.2s; border: none;
+    }
+
+    .btn-ghost { background: transparent; color: #5a5750; }
+    .btn-ghost:hover { color: var(--ink); }
+
+    .btn-primary {
+      background: var(--ink); color: var(--white);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .btn-primary:hover {
+      background: #2d2c28;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transform: translateY(-1px);
+    }
+
+    /* ═══════════ HERO ═══════════ */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(37,99,235,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(220,118,51,0.04) 0%, transparent 60%);
+    }
+
+    .hero-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 760px; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(37,99,235,0.15);
+      border-radius: 100px;
+      padding: 5px 14px 5px 8px;
+      font-size: 0.8rem; font-weight: 500; color: var(--accent);
+      margin-bottom: 32px;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+
+    .badge-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 24px;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-weight: 300;
+      color: #6b6a65;
+      line-height: 1.6;
+      max-width: 520px; margin: 0 auto 40px;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+
+    .hero-actions {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      animation: fadeUp 0.7s 0.4s ease both;
+    }
+
+    .btn-large { padding: 13px 28px; font-size: 0.95rem; border-radius: 100px; }
+
+    .hero-scroll {
+      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: var(--mid); font-size: 0.75rem; letter-spacing: 0.05em;
+      text-transform: uppercase;
+      animation: fadeUp 0.7s 0.8s ease both;
+      cursor: pointer;
+    }
+
+    .scroll-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--mid), transparent);
+      animation: scrollPulse 2s ease infinite;
+    }
+
+    /* ═══════════ STATS STRIP ═══════════ */
+    .stats {
+      background: var(--off);
+      border-top: 1px solid var(--stone);
+      border-bottom: 1px solid var(--stone);
+      padding: 40px 48px;
+      display: flex; justify-content: center; gap: 80px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item { text-align: center; }
+
+    .stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.5rem;
+      color: var(--ink);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      font-size: 0.8rem; font-weight: 400;
+      color: var(--mid); letter-spacing: 0.04em; text-transform: uppercase;
+    }
+
+    /* ═══════════ FEATURES ═══════════ */
+    .features {
+      padding: 120px 48px;
+      max-width: 1100px; margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      font-size: 1rem; font-weight: 300;
+      color: #6b6a65; line-height: 1.6;
+      max-width: 480px;
+    }
+
+    .features-grid {
+      margin-top: 72px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feat-card {
+      background: var(--white);
+      border: 1px solid var(--stone);
+      border-radius: var(--radius);
+      padding: 32px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feat-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .feat-card:hover {
+      border-color: rgba(37,99,235,0.2);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+      transform: translateY(-3px);
+    }
+
+    .feat-card:hover::before { opacity: 1; }
+
+    .feat-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin-bottom: 20px;
+    }
+
+    .feat-icon.blue   { background: var(--accent-soft); }
+    .feat-icon.orange { background: #fff5ee; }
+    .feat-icon.green  { background: #f0fdf4; }
+    .feat-icon.purple { background: #f5f3ff; }
+    .feat-icon.red    { background: #fff1f2; }
+    .feat-icon.gray   { background: var(--off); }
+
+    .feat-title {
+      font-weight: 500; font-size: 1rem;
+      margin-bottom: 10px; color: var(--ink);
+    }
+
+    .feat-desc {
+      font-size: 0.875rem; font-weight: 300;
+      color: #6b6a65; line-height: 1.6;
+    }
+
+    /* ═══════════ DASHBOARD PREVIEW ═══════════ */
+    .preview-section {
+      background: var(--off);
+      border-top: 1px solid var(--stone);
+      border-bottom: 1px solid var(--stone);
+      padding: 100px 48px;
+      text-align: center;
+    }
+
+    .preview-section .section-sub { margin: 0 auto; }
+
+    .dashboard-mock {
+      margin: 60px auto 0;
+      max-width: 900px;
+      background: var(--white);
+      border: 1px solid var(--stone);
+      border-radius: 20px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .mock-topbar {
+      background: var(--ink);
+      padding: 14px 20px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .mock-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    .mock-body {
+      display: grid; grid-template-columns: 200px 1fr;
+      min-height: 380px;
+    }
+
+    .mock-sidebar {
+      background: #fafaf8;
+      border-right: 1px solid var(--stone);
+      padding: 20px 16px;
+    }
+
+    .mock-nav-item {
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      color: #6b6a65;
+      margin-bottom: 4px;
+      text-align: left;
+      cursor: default;
+    }
+
+    .mock-nav-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .mock-main { padding: 24px; }
+    .mock-row { display: flex; gap: 12px; margin-bottom: 12px; }
+
+    .mock-stat-card {
+      flex: 1; background: var(--off);
+      border: 1px solid var(--stone);
+      border-radius: 10px; padding: 16px;
+    }
+
+    .mock-stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem; color: var(--ink); margin-bottom: 2px;
+    }
+
+    .mock-stat-label {
+      font-size: 0.65rem; color: var(--mid);
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+
+    .mock-chart-area {
+      background: var(--off); border: 1px solid var(--stone);
+      border-radius: 10px; padding: 16px;
+      display: flex; align-items: flex-end; gap: 8px;
+      height: 140px;
+    }
+
+    .mock-bar {
+      flex: 1; border-radius: 4px 4px 0 0;
+      background: var(--accent);
+      opacity: 0.2;
+      transition: opacity 0.3s;
+    }
+    .mock-bar:hover { opacity: 0.8; }
+    .mock-bar.active { opacity: 0.7; }
+
+    .mock-tag {
+      display: inline-block; padding: 2px 8px;
+      border-radius: 100px; font-size: 0.6rem; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+
+    .tag-open     { background: #fef9c3; color: #854d0e; }
+    .tag-progress { background: #dbeafe; color: #1e40af; }
+    .tag-resolved { background: #dcfce7; color: #15803d; }
+
+    .mock-complaint-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--stone);
+      font-size: 0.72rem; color: #5a5750;
+    }
+
+    /* ═══════════ HOW IT WORKS ═══════════ */
+    .flow-section {
+      padding: 120px 48px;
+      max-width: 900px; margin: 0 auto;
+    }
+
+    .flow-steps {
+      margin-top: 64px;
+      display: flex; flex-direction: column; gap: 0;
+      position: relative;
+    }
+
+    .flow-steps::before {
+      content: '';
+      position: absolute; left: 20px; top: 0; bottom: 0;
+      width: 1px; background: var(--stone);
+    }
+
+    .flow-step {
+      display: flex; gap: 32px; align-items: flex-start;
+      padding: 0 0 48px 0;
+      position: relative;
+    }
+
+    .flow-num {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--white); border: 1px solid var(--stone);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Serif Display', serif;
+      font-size: 1rem; color: var(--ink);
+      flex-shrink: 0; position: relative; z-index: 1;
+    }
+
+    .flow-text h3 {
+      font-weight: 500; font-size: 1.05rem;
+      margin-bottom: 8px; color: var(--ink);
+      padding-top: 8px;
+    }
+
+    .flow-text p {
+      font-size: 0.875rem; font-weight: 300;
+      color: #6b6a65; line-height: 1.6; max-width: 500px;
+    }
+
+    /* ═══════════ CTA BLOCK ═══════════ */
+    .cta-section {
+      margin: 0 48px 80px;
+      background: var(--ink);
+      border-radius: 24px;
+      padding: 80px 48px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 50% 0%, rgba(37,99,235,0.3) 0%, transparent 70%);
+    }
+
+    .cta-section * { position: relative; z-index: 1; }
+
+    .cta-section h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--white);
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .cta-section p {
+      color: rgba(255,255,255,0.55);
+      font-weight: 300; font-size: 1rem;
+      margin-bottom: 40px;
+    }
+
+    .btn-white { background: var(--white); color: var(--ink); font-weight: 500; }
+    .btn-white:hover {
+      background: var(--off);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    .btn-outline-white {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.8);
+    }
+    .btn-outline-white:hover {
+      border-color: rgba(255,255,255,0.4);
+      color: var(--white);
+    }
+
+    .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    /* ═══════════ FOOTER ═══════════ */
+    footer {
+      padding: 32px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid var(--stone);
+      font-size: 0.8rem; color: var(--mid);
+    }
+
+    .footer-logo {
+      font-family: 'DM Serif Display', serif;
+      color: var(--ink); font-size: 1rem;
+    }
+
+    /* ═══════════ ANIMATIONS ═══════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(1); }
+      50%       { opacity: 1;   transform: scaleY(1.1); }
+    }
+
+    /* Scroll-reveal base state */
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ═══════════ RESPONSIVE ═══════════ */
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .hero { padding: 100px 20px 80px; }
+      .stats { padding: 40px 20px; gap: 40px; }
+      .features { padding: 80px 20px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .preview-section { padding: 80px 20px; }
+      .mock-body { grid-template-columns: 1fr; }
+      .mock-sidebar { display: none; }
+      .flow-section { padding: 80px 20px; }
+      .cta-section { margin: 0 20px 60px; padding: 60px 24px; }
+      footer { padding: 24px 20px; flex-direction: column; gap: 8px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════ NAV ══════════════════ -->
+<nav id="navbar">
+  <a href="{{ url_for('student.landing') }}" class="nav-logo">CampusSync</a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#admin">Admin</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="{{ url_for('auth.login') }}" class="btn btn-ghost" id="nav-signin">Sign in</a>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-primary" id="nav-getstarted">Get started</a>
+  </div>
+</nav>
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge" id="hero-badge">
+      <div class="badge-dot"></div>
+      Now live across campus
+    </div>
+    <h1 id="hero-heading">Your campus,<br><em>finally</em> listening.</h1>
+    <p class="hero-sub" id="hero-sub">
+      Report infrastructure issues, track resolutions in real time, and hold your institution accountable — all in one place.
+    </p>
+    <div class="hero-actions" id="hero-actions">
+      <a href="#features" class="btn btn-primary btn-large" id="hero-cta-scroll">See how it works</a>
+      <a href="{{ url_for('auth.login') }}" class="btn btn-ghost btn-large" id="hero-cta-login">Sign in →</a>
+    </div>
+  </div>
+  <div class="hero-scroll" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})" id="hero-scroll-hint">
+    <div class="scroll-line"></div>
+    scroll
+  </div>
+</section>
+
+<!-- ══════════════════ STATS STRIP ══════════════════ -->
+<div class="stats" id="stats-strip">
+  <div class="stat-item reveal">
+    <div class="stat-num">2.4k</div>
+    <div class="stat-label">Complaints filed</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num">89%</div>
+    <div class="stat-label">Resolution rate</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num">3.2d</div>
+    <div class="stat-label">Avg. resolution time</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num">12</div>
+    <div class="stat-label">Departments covered</div>
+  </div>
+</div>
+
+<!-- ══════════════════ FEATURES ══════════════════ -->
+<section class="features" id="features">
+  <div class="reveal">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Everything a student<br>actually needs.</h2>
+    <p class="section-sub">Not a Google Form. Not a suggestion box. A real system with accountability built in.</p>
+  </div>
+
+  <div class="features-grid" id="features-grid">
+    <div class="feat-card reveal">
+      <div class="feat-icon blue">📋</div>
+      <div class="feat-title">File a complaint</div>
+      <div class="feat-desc">Report broken infrastructure in under 60 seconds. Categorise, describe, attach photos. Done.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon orange">🔔</div>
+      <div class="feat-title">Real-time status</div>
+      <div class="feat-desc">Watch your complaint move from open → in progress → resolved. No more guessing if anyone read it.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon green">✅</div>
+      <div class="feat-title">Upvote issues</div>
+      <div class="feat-desc">Support complaints raised by others. The most urgent problems rise to the top automatically.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon purple">📊</div>
+      <div class="feat-title">Live dashboard</div>
+      <div class="feat-desc">Admins get a full analytics view — charts, trends, departments, and resolution metrics in one place.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon red">🏷️</div>
+      <div class="feat-title">Smart categorisation</div>
+      <div class="feat-desc">Electrical, plumbing, internet, safety — routed to the right department automatically.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon gray">🔒</div>
+      <div class="feat-title">Role-based access</div>
+      <div class="feat-desc">Students see their complaints. Admins manage all. Nothing bleeds where it shouldn't.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ DASHBOARD PREVIEW ══════════════════ -->
+<section class="preview-section" id="admin">
+  <div class="reveal">
+    <div class="section-label">Admin dashboard</div>
+    <h2 class="section-title">Everything in view,<br>nothing slipping through.</h2>
+    <p class="section-sub">A clean, data-driven interface that gives administrators real clarity — not just a list of emails.</p>
+  </div>
+
+  <div class="dashboard-mock reveal">
+    <!-- Browser chrome -->
+    <div class="mock-topbar">
+      <div class="mock-dot" style="background:#ff5f57"></div>
+      <div class="mock-dot" style="background:#febc2e"></div>
+      <div class="mock-dot" style="background:#28c840"></div>
+      <div style="flex:1; text-align:center; font-size:0.7rem; color:rgba(255,255,255,0.3); font-family:'DM Sans',sans-serif;">CampusSync Admin</div>
+    </div>
+    <div class="mock-body">
+      <!-- Sidebar -->
+      <div class="mock-sidebar">
+        <div class="mock-nav-item active">📊 Overview</div>
+        <div class="mock-nav-item">📋 Complaints</div>
+        <div class="mock-nav-item">👥 Users</div>
+        <div class="mock-nav-item">🏷️ Categories</div>
+        <div class="mock-nav-item">⚙️ Settings</div>
+      </div>
+      <!-- Main content -->
+      <div class="mock-main">
+        <div class="mock-row">
+          <div class="mock-stat-card">
+            <div class="mock-stat-num">142</div>
+            <div class="mock-stat-label">Active</div>
+          </div>
+          <div class="mock-stat-card">
+            <div class="mock-stat-num">89%</div>
+            <div class="mock-stat-label">Resolved</div>
+          </div>
+          <div class="mock-stat-card">
+            <div class="mock-stat-num">3.2d</div>
+            <div class="mock-stat-label">Avg. time</div>
+          </div>
+        </div>
+        <!-- Bar chart -->
+        <div class="mock-chart-area">
+          <div class="mock-bar" style="height:40%"></div>
+          <div class="mock-bar" style="height:60%"></div>
+          <div class="mock-bar" style="height:45%"></div>
+          <div class="mock-bar active" style="height:80%"></div>
+          <div class="mock-bar" style="height:55%"></div>
+          <div class="mock-bar" style="height:70%"></div>
+          <div class="mock-bar" style="height:50%"></div>
+          <div class="mock-bar active" style="height:90%"></div>
+          <div class="mock-bar" style="height:65%"></div>
+          <div class="mock-bar" style="height:75%"></div>
+        </div>
+        <!-- Complaint rows -->
+        <div style="margin-top:12px;">
+          <div class="mock-complaint-row">
+            <span class="mock-tag tag-open">Open</span>
+            <span>Lab 3B — AC not working</span>
+            <span style="margin-left:auto; color:var(--mid);">2h ago</span>
+          </div>
+          <div class="mock-complaint-row">
+            <span class="mock-tag tag-progress">In progress</span>
+            <span>Hostel B — water leak</span>
+            <span style="margin-left:auto; color:var(--mid);">1d ago</span>
+          </div>
+          <div class="mock-complaint-row" style="border:none">
+            <span class="mock-tag tag-resolved">Resolved</span>
+            <span>Library — broken projector</span>
+            <span style="margin-left:auto; color:var(--mid);">3d ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ HOW IT WORKS ══════════════════ -->
+<section class="flow-section" id="how">
+  <div class="reveal">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">Simple by design.</h2>
+    <p class="section-sub">Three steps. No bureaucracy. No black hole.</p>
+  </div>
+
+  <div class="flow-steps">
+    <div class="flow-step reveal">
+      <div class="flow-num">1</div>
+      <div class="flow-text">
+        <h3>Student files a complaint</h3>
+        <p>Pick a category, describe the issue, add a photo if needed. It takes less than a minute and goes directly to the right department.</p>
+      </div>
+    </div>
+    <div class="flow-step reveal">
+      <div class="flow-num">2</div>
+      <div class="flow-text">
+        <h3>Admin reviews &amp; assigns</h3>
+        <p>The dashboard surfaces complaints by urgency. Admins assign, update status, and communicate progress — all from one view.</p>
+      </div>
+    </div>
+    <div class="flow-step reveal">
+      <div class="flow-num">3</div>
+      <div class="flow-text">
+        <h3>Issue resolved. Record kept.</h3>
+        <p>The student sees the resolution. The system logs it. The data gets better. Everyone moves on.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ CTA BLOCK ══════════════════ -->
+<section class="cta-section reveal" id="cta-block">
+  <h2>Your campus. Your voice.</h2>
+  <p>Join students already using CampusSync to make infrastructure complaints that actually get fixed.</p>
+  <div class="cta-btns">
+    <a href="{{ url_for('auth.login') }}?role=student" class="btn btn-white btn-large" id="cta-student">Sign in as Student</a>
+    <a href="{{ url_for('auth.login') }}?role=admin"   class="btn btn-outline-white btn-large" id="cta-admin">Admin login →</a>
+  </div>
+</section>
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<footer id="footer">
+  <span class="footer-logo">CampusSync</span>
+  <span>Built for students who are tired of broken things.</span>
+  <span>© 2025</span>
+</footer>
+
+<script>
+  // ── Scroll reveal via IntersectionObserver ──
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // ── Feature cards stagger (60ms between each) ──
+  const featGrid = document.getElementById('features-grid');
+  if (featGrid) {
+    featGrid.querySelectorAll('.reveal').forEach((el, i) => {
+      el.style.transitionDelay = `${i * 60}ms`;
+    });
+  }
+</script>
+</body>
+</html>
