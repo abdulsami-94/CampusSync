@@ -1,31 +1,3 @@
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bs-body-bg);
-}
-
-.card {
-    border-radius: 10px;
-    border: none;
-}
-
-.status-badge {
-    font-size: 0.85em;
-    padding: 0.35em 0.65em;
-}
-
-/* Dashboard Card Hover Animation */
-.dashboard-cards-container:hover .hover-card {
-    transform: scale(0.95);
-    opacity: 0.7;
-}
-
-.hover-card {
-    transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
-}
-
-.dashboard-cards-container .hover-card:hover {
-    transform: scale(1.05);
-    opacity: 1;
-    z-index: 2;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
-}
+/* Legacy Bootstrap styles have been moved to base.html */
+/* All global styles using the new design system are now in base.html */
+/* CSS variables defined in base.html: --white, --off, --stone, --mid, --ink, --accent, --accent-soft */

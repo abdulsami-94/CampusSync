@@ -1,53 +1,45 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">My Assigned Tasks</h1>
-</div>
+<h1 style="margin-bottom: 32px;">My Assigned Tasks</h1>
 
 {% if complaints %}
-<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
     {% for complaint in complaints %}
-    <div class="col">
-        <div
-            class="card h-100 shadow-sm border-0 {% if complaint.status == 'Escalated' %}border-danger border-2{% endif %}">
-            <div class="card-header d-flex justify-content-between align-items-center bg-white border-bottom">
-                <span class="badge bg-secondary">{{ complaint.category }}</span>
-                {% if complaint.status == 'Pending' %}
-                <span class="badge bg-warning text-dark status-badge">{{ complaint.status }}</span>
-                {% elif complaint.status == 'In Progress' %}
-                <span class="badge bg-info text-dark status-badge">{{ complaint.status }}</span>
-                {% elif complaint.status == 'Resolved' %}
-                <span class="badge bg-success status-badge">{{ complaint.status }}</span>
-                {% else %}
-                <span class="badge bg-danger status-badge">{{ complaint.status }}</span>
-                {% endif %}
-            </div>
-            <div class="card-body">
-                <h5 class="card-title text-truncate" title="{{ complaint.title }}">{{ complaint.title }}</h5>
-                <p class="card-text text-muted small mb-2"><i class="bi bi-geo-alt"></i> {{ complaint.location }}</p>
-                <p class="card-text small text-muted"><strong>Student:</strong> {{ complaint.author.username }}</p>
-                <p class="card-text text-truncate">{{ complaint.description }}</p>
+    <div class="card reveal">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="badge" style="background: var(--off); color: var(--ink);">{{ complaint.category }}</span>
+            {% if complaint.status == 'Pending' %}
+            <span class="badge status-pending">{{ complaint.status }}</span>
+            {% elif complaint.status == 'In Progress' %}
+            <span class="badge status-in-progress">{{ complaint.status }}</span>
+            {% elif complaint.status == 'Resolved' %}
+            <span class="badge status-resolved">{{ complaint.status }}</span>
+            {% else %}
+            <span class="badge" style="background: #fee2e2; color: #dc2626;">{{ complaint.status }}</span>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <h4 style="margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ complaint.title }}</h4>
+            <p style="color: var(--mid); font-size: 0.875rem; margin-bottom: 8px;">Location: {{ complaint.location }}</p>
+            <p style="color: var(--mid); font-size: 0.875rem; margin-bottom: 12px;">Student: {{ complaint.author.username }}</p>
+            <p style="color: var(--ink); font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ complaint.description }}</p>
 
-                {% if complaint.image_file %}
-                <a href="{{ url_for('static', filename='uploads/' + complaint.image_file) }}" target="_blank"
-                    class="small text-decoration-none">View Uploaded Evidence</a>
-                {% endif %}
-            </div>
-            <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
-                <small class="text-muted">{{ complaint.date_posted.strftime('%Y-%m-%d') }}</small>
-                <div>
-                    <!-- Link to Student View since it works universally for info, but for this demo, Update takes priority -->
-                    <a href="{{ url_for('staff.update_complaint', complaint_id=complaint.id) }}"
-                        class="btn btn-sm btn-primary">Update Task</a>
-                </div>
-            </div>
+            {% if complaint.image_file %}
+            <p style="font-size: 0.85rem; margin-top: 12px;">
+                <a href="{{ url_for('static', filename='uploads/' + complaint.image_file) }}" target="_blank" style="color: var(--accent); text-decoration: none;">View Evidence</a>
+            </p>
+            {% endif %}
+        </div>
+        <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center;">
+            <small style="color: var(--mid);">{{ complaint.date_posted.strftime('%Y-%m-%d') }}</small>
+            <a href="{{ url_for('staff.update_complaint', complaint_id=complaint.id) }}" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.85rem;">Update Task</a>
         </div>
     </div>
     {% endfor %}
 </div>
 {% else %}
-<div class="text-center py-5 text-muted">
-    <h4>No tasks assigned to you right now.</h4>
+<div style="text-align: center; padding: 60px 20px; color: var(--mid);">
+    <h3 style="margin-bottom: 12px; color: var(--ink);">No tasks assigned to you right now.</h3>
 </div>
 {% endif %}
 {% endblock %}

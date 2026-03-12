@@ -1,23 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">My Complaints</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <a href="{{ url_for('student.new_complaint') }}" class="btn btn-sm btn-primary">
-            Register New Complaint
-        </a>
-    </div>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-wrap: wrap; gap: 16px;">
+    <h1>My Complaints</h1>
+    <a href="{{ url_for('student.new_complaint') }}" class="btn btn-primary">Register New Complaint</a>
 </div>
 
 <!-- Filter and Search -->
-<div class="card shadow-sm mb-4">
-    <div class="card-body bg-body-tertiary rounded">
-        <form method="GET" action="{{ url_for('student.dashboard') }}" class="row gx-3 gy-2 align-items-center">
-            <div class="col-sm-3">
-                <input type="text" class="form-control" name="search" placeholder="Search title or details..." value="{{ request.args.get('search', '') }}">
+<div class="card mb-4">
+    <div class="card-body" style="background: var(--off);">
+        <form method="GET" action="{{ url_for('student.dashboard') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; align-items: flex-end;">
+            <div>
+                <label for="search">Search</label>
+                <input type="text" id="search" name="search" placeholder="Title or details..." value="{{ request.args.get('search', '') }}">
             </div>
-            <div class="col-sm-2">
-                <select class="form-select" name="category">
+            <div>
+                <label for="category">Category</label>
+                <select id="category" name="category">
                     <option value="">All Categories</option>
                     <option value="Wi-Fi / Internet" {% if request.args.get('category')=='Wi-Fi / Internet' %}selected{% endif %}>Wi-Fi / Internet</option>
                     <option value="Classrooms" {% if request.args.get('category')=='Classrooms' %}selected{% endif %}>Classrooms</option>
@@ -31,75 +29,74 @@
                     <option value="Other" {% if request.args.get('category')=='Other' %}selected{% endif %}>Other</option>
                 </select>
             </div>
-            <div class="col-sm-2">
-                <select class="form-select" name="status">
+            <div>
+                <label for="status">Status</label>
+                <select id="status" name="status">
                     <option value="">All Statuses</option>
                     <option value="Pending" {% if request.args.get('status')=='Pending' %}selected{% endif %}>Pending</option>
                     <option value="In Progress" {% if request.args.get('status')=='In Progress' %}selected{% endif %}>In Progress</option>
                     <option value="Resolved" {% if request.args.get('status')=='Resolved' %}selected{% endif %}>Resolved</option>
                 </select>
             </div>
-            <div class="col-sm-3">
-                <select class="form-select" name="sort">
+            <div>
+                <label for="sort">Sort</label>
+                <select id="sort" name="sort">
                     <option value="newest" {% if request.args.get('sort')=='newest' %}selected{% endif %}>Newest</option>
                     <option value="oldest" {% if request.args.get('sort')=='oldest' %}selected{% endif %}>Oldest</option>
                     <option value="upvoted" {% if request.args.get('sort')=='upvoted' %}selected{% endif %}>Most Upvoted</option>
                 </select>
             </div>
-            <div class="col-auto">
+            <div style="display: flex; gap: 8px;">
                 <button type="submit" class="btn btn-primary">Filter</button>
                 <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary">Clear</a>
             </div>
         </form>
     </div>
 </div>
+
 {% if complaints %}
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
     {% for complaint in complaints %}
-    <div class="col">
-        <div class="card h-100 shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span class="badge bg-secondary">{{ complaint.category }}</span>
+    <div class="card reveal">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="badge" style="background: var(--off); color: var(--ink);">{{ complaint.category }}</span>
+            {% if complaint.status == 'Pending' %}
+            <span class="badge status-pending">{{ complaint.status }}</span>
+            {% elif complaint.status == 'In Progress' %}
+            <span class="badge status-in-progress">{{ complaint.status }}</span>
+            {% elif complaint.status == 'Resolved' %}
+            <span class="badge status-resolved">{{ complaint.status }}</span>
+            {% else %}
+            <span class="badge" style="background: #fee2e2; color: #dc2626;">{{ complaint.status }}</span>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <h4 style="margin-bottom: 12px;">{{ complaint.title }}</h4>
+            <p style="color: var(--mid); font-size: 0.875rem; margin-bottom: 8px;">Location: {{ complaint.location }}</p>
+            <p style="color: var(--mid); font-size: 0.875rem; margin-bottom: 12px;">Priority: {{ complaint.priority }}</p>
+            <p style="color: var(--ink); font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ complaint.description }}</p>
+        </div>
+        <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center;">
+            <small style="color: var(--mid);">{{ complaint.date_posted.strftime('%Y-%m-%d %H:%M') }}</small>
+            <div style="display: flex; gap: 8px;">
+                <a href="{{ url_for('student.view_complaint', complaint_id=complaint.id) }}" class="btn btn-ghost" style="padding: 4px 12px; font-size: 0.8rem;">View</a>
                 {% if complaint.status == 'Pending' %}
-                <span class="badge bg-warning text-dark status-badge">{{ complaint.status }}</span>
-                {% elif complaint.status == 'In Progress' %}
-                <span class="badge bg-info text-dark status-badge">{{ complaint.status }}</span>
-                {% elif complaint.status == 'Resolved' %}
-                <span class="badge bg-success status-badge">{{ complaint.status }}</span>
-                {% else %}
-                <span class="badge bg-danger status-badge">{{ complaint.status }}</span>
+                <a href="{{ url_for('student.edit_complaint', complaint_id=complaint.id) }}" class="btn btn-secondary" style="padding: 4px 12px; font-size: 0.8rem;">Edit</a>
                 {% endif %}
-            </div>
-            <div class="card-body">
-                <h5 class="card-title">{{ complaint.title }}</h5>
-                <p class="card-text text-muted mb-1"><small>Location: {{ complaint.location }}</small></p>
-                <p class="card-text text-muted"><small>Priority: {{ complaint.priority }}</small></p>
-                <p class="card-text text-truncate">{{ complaint.description }}</p>
-            </div>
-            <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
-                <small class="text-muted">{{ complaint.date_posted.strftime('%Y-%m-%d %H:%M') }}</small>
-                <div>
-                    <a href="{{ url_for('student.view_complaint', complaint_id=complaint.id) }}"
-                        class="btn btn-sm btn-outline-primary">View</a>
-                    {% if complaint.status == 'Pending' %}
-                    <a href="{{ url_for('student.edit_complaint', complaint_id=complaint.id) }}"
-                        class="btn btn-sm btn-outline-secondary">Edit</a>
-                    {% endif %}
-                </div>
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
-<div class="mt-4">
+<div style="margin-top: 40px;">
     {{ pagination.info }}
     {{ pagination.links }}
 </div>
 {% else %}
-<div class="text-center py-5 text-muted">
-    <h4>No complaints registered yet.</h4>
-    <p>If you have any civic issues, you can register a new complaint.</p>
-    <a href="{{ url_for('student.new_complaint') }}" class="btn btn-primary mt-2">Get Started</a>
+<div style="text-align: center; padding: 60px 20px; color: var(--mid);">
+    <h3 style="margin-bottom: 12px; color: var(--ink);">No complaints registered yet.</h3>
+    <p>If you have any issues, you can register a new complaint.</p>
+    <a href="{{ url_for('student.new_complaint') }}" class="btn btn-primary" style="margin-top: 20px;">Get Started</a>
 </div>
 {% endif %}
 {% endblock %}

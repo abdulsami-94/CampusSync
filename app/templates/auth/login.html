@@ -1,32 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Login to CivicSync</h4>
-            </div>
+<div style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 64px);">
+    <div style="width: 100%; max-width: 420px;">
+        <div class="card">
             <div class="card-body">
+                <h2 style="margin-bottom: 32px; text-align: center;">Login to CampusSync</h2>
                 <form method="POST" action="">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email" required autofocus>
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <input type="email" id="email" name="email" required autofocus>
                     </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
                     </div>
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                        <label class="form-check-label" for="remember">Remember Me</label>
+                    <div style="display: flex; align-items: center; margin-bottom: 24px;">
+                        <input type="checkbox" id="remember" name="remember" style="width: auto; margin-right: 8px;">
+                        <label for="remember" style="margin-bottom: 0; text-transform: none; font-size: 0.875rem; font-weight: 400; letter-spacing: 0;">Remember Me</label>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-bottom: 16px;">Login</button>
                 </form>
             </div>
-            <div class="card-footer text-center">
-                <small class="text-muted">Need An Account? <a href="{{ url_for('auth.register') }}">Sign Up
-                        Now</a></small>
+            <div style="text-align: center; padding: 16px 32px; border-top: 1px solid var(--stone);">
+                <small style="color: var(--mid); font-size: 0.85rem;">Need An Account? <a href="{{ url_for('auth.register') }}" style="color: var(--accent); text-decoration: none;">Sign Up</a></small>
             </div>
         </div>
     </div>

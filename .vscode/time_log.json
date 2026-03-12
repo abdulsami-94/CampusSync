@@ -1,0 +1,128 @@
+{
+  "CampusSync": {
+    "app/templates/index.html": [
+      {
+        "date": "2026-03-12T06:20:55.436Z",
+        "user": {
+          "name": "Abdul Sami Shaikh",
+          "email": "abdulsamishaikh232@gmail.com"
+        },
+        "timeSpent": 29
+      }
+    ],
+    "app/templates/base.html": [
+      {
+        "date": "2026-03-12T06:21:42.497Z",
+        "user": {
+          "name": "Abdul Sami Shaikh",
+          "email": "abdulsamishaikh232@gmail.com"
+        },
+        "timeSpent": 0
+      }
+    ],
+    "app/templates/auth/register.html": [
+      {
+        "date": "2026-03-12T06:21:59.051Z",
+        "user": {
+          "name": "Abdul Sami Shaikh",
+          "email": "abdulsamishaikh232@gmail.com"
+        },
+        "timeSpent": 0
+      }
+    ],
+    "app/templates/auth/login.html": [
+      {
+        "date": "2026-03-12T06:22:33.449Z",
+        "user": {
+          "name": "Abdul Sami Shaikh",
+          "email": "abdulsamishaikh232@gmail.com"
+        },
+        "timeSpent": 7
+      },
+      {
+        "date": "2026-03-12T06:23:19.504Z",
+        "user": {
+          "name": "Abdul Sami Shaikh",
+          "email": "abdulsamishaikh232@gmail.com"
+        },
+        "timeSpent": 46
+      }
+    ],
+    "app/templates/student/view_complaint.html": [
+      {
+        "date": "2026-03-12T06:23:27.175Z",
+        "user": {
+          "name": "Abdul Sami Shaikh",
+          "email": "abdulsamishaikh232@gmail.com"
+        },
+        "timeSpent": 0
+      }
+    ],
+    "app/templates/admin/dashboard_new.html": [
+      {
+        "date": "2026-03-12T06:24:20.045Z",
+        "user": {
+          "name": "Abdul Sami Shaikh",
+          "email": "abdulsamishaikh232@gmail.com"
+        },
+        "timeSpent": 1
+      }
+    ],
+    "app/templates/staff/update_complaint.html": [
+      {
+        "date": "2026-03-12T06:25:08.426Z",
+        "user": {
+          "name": "Abdul Sami Shaikh",
+          "email": "abdulsamishaikh232@gmail.com"
+        },
+        "timeSpent": 0
+      }
+    ],
+    "app/templates/errors/500.html": [
+      {
+        "date": "2026-03-12T06:25:22.873Z",
+        "user": {
+          "name": "Abdul Sami Shaikh",
+          "email": "abdulsamishaikh232@gmail.com"
+        },
+        "timeSpent": 0
+      }
+    ],
+    "app/static/css/style.css": [
+      {
+        "date": "2026-03-12T06:25:30.250Z",
+        "user": {
+          "name": "Abdul Sami Shaikh",
+          "email": "abdulsamishaikh232@gmail.com"
+        },
+        "timeSpent": 0
+      },
+      {
+        "date": "2026-03-12T06:25:53.231Z",
+        "user": {
+          "name": "Abdul Sami Shaikh",
+          "email": "abdulsamishaikh232@gmail.com"
+        },
+        "timeSpent": 23
+      }
+    ],
+    "app/templates/auth/login.html.git": [
+      {
+        "date": "2026-03-12T06:25:56.594Z",
+        "user": {
+          "name": "Abdul Sami Shaikh",
+          "email": "abdulsamishaikh232@gmail.com"
+        },
+        "timeSpent": 3
+      },
+      {
+        "date": "2026-03-12T06:27:03.046Z",
+        "user": {
+          "name": "Abdul Sami Shaikh",
+          "email": "abdulsamishaikh232@gmail.com"
+        },
+        "timeSpent": 66
+      }
+    ]
+  }
+}

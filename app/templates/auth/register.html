@@ -1,33 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Create CampusSync Account</h4>
-            </div>
+<div style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 64px);">
+    <div style="width: 100%; max-width: 420px;">
+        <div class="card">
             <div class="card-body">
+                <h2 style="margin-bottom: 32px; text-align: center;">Create CampusSync Account</h2>
                 <form method="POST" action="">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" required autofocus>
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required autofocus>
                     </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <input type="email" id="email" name="email" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
                     </div>
-                    <!-- Registration creates a Student account by default -->
-                    <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-bottom: 16px;">Sign Up</button>
                 </form>
             </div>
-            <div class="card-footer text-center">
-                <small class="text-muted">Already Have An Account? <a href="{{ url_for('auth.login') }}">Sign
-                        In</a></small>
+            <div style="text-align: center; padding: 16px 32px; border-top: 1px solid var(--stone);">
+                <small style="color: var(--mid); font-size: 0.85rem;">Already Have An Account? <a href="{{ url_for('auth.login') }}" style="color: var(--accent); text-decoration: none;">Sign In</a></small>
             </div>
         </div>
     </div>

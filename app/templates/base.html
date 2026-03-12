@@ -8,83 +8,494 @@
     {% else %}
         <title>CampusSync</title>
     {% endif %}
-        <script>
-        const storedTheme = localStorage.getItem('theme');
-        if (storedTheme && storedTheme !== 'system') {
-            document.documentElement.setAttribute('data-bs-theme', storedTheme);
-        } else if (storedTheme === 'system' || !storedTheme) {
-            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-bs-theme', systemTheme);
-        }
-    </script>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- Chart.js -->
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+
+    <!-- Chart.js (keep for existing charts) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --white: #ffffff;
+            --off: #f5f4f0;
+            --stone: #e8e6e0;
+            --mid: #9a9690;
+            --ink: #1a1916;
+            --accent: #2563eb;
+            --accent-soft: #eff4ff;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--white);
+            color: var(--ink);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ─── Typography ─── */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'DM Serif Display', serif;
+            letter-spacing: -0.02em;
+        }
+
+        h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); line-height: 1.1; }
+        h2 { font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.15; }
+        h3 { font-size: 1.25rem; line-height: 1.3; }
+        h4 { font-size: 1rem; line-height: 1.4; }
+        h5 { font-size: 0.9rem; line-height: 1.4; }
+        h6 { font-size: 0.8rem; line-height: 1.5; }
+
+        p, body { font-size: 0.95rem; line-height: 1.6; }
+
+        /* ─── Navbar ─── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 48px;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+        }
+
+        nav .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        nav .nav-logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.1rem;
+            letter-spacing: -0.01em;
+            color: var(--ink);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        nav .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 32px;
+        }
+
+        nav .nav-links a {
+            font-size: 0.875rem;
+            color: #5a5750;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        nav .nav-links a:hover {
+            color: var(--ink);
+        }
+
+        nav .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* ─── Buttons ─── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn:hover {
+            text-decoration: none;
+        }
+
+        /* Primary */
+        .btn-primary {
+            background: var(--ink);
+            color: var(--white);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary:hover {
+            background: #2d2c28;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Ghost */
+        .btn-ghost {
+            background: transparent;
+            color: #5a5750;
+        }
+
+        .btn-ghost:hover {
+            color: var(--ink);
+        }
+
+        /* Danger */
+        .btn-danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+            transform: translateY(-1px);
+        }
+
+        /* Secondary (outline) */
+        .btn-secondary {
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid var(--stone);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: var(--off);
+            border-color: var(--mid);
+        }
+
+        /* ─── Cards ─── */
+        .card {
+            background: var(--white);
+            border: 1px solid var(--stone);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover {
+            border-color: rgba(37, 99, 235, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+            transform: translateY(-3px);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            background: transparent;
+            border-bottom: 1px solid var(--stone);
+            padding: 24px 32px;
+            color: var(--ink);
+        }
+
+        .card-body {
+            padding: 32px;
+        }
+
+        .card-footer {
+            background: transparent;
+            border-top: 1px solid var(--stone);
+            padding: 24px 32px;
+        }
+
+        /* ─── Forms ─── */
+        label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--ink);
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            border: 1px solid var(--stone);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            color: var(--ink);
+            background: var(--white);
+            transition: all 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        /* ─── Status Tags ─── */
+        .status-pending {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status-in-progress {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-resolved {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge {
+            border-radius: 100px;
+            padding: 3px 10px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        /* ─── Tables ─── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead tr {
+            background: var(--off);
+        }
+
+        thead th {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--mid);
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        tbody td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--stone);
+        }
+
+        tbody tr:hover {
+            background: #fafaf8;
+        }
+
+        /* ─── Main Content ─── */
+        main {
+            margin-top: 64px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 80px 48px;
+        }
+
+        /* ─── Flash Messages ─── */
+        .flash-message {
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            border: 1px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .flash-message.success {
+            background: #dcfce7;
+            color: #15803d;
+            border-color: #86efac;
+        }
+
+        .flash-message.error {
+            background: #fee2e2;
+            color: #dc2626;
+            border-color: #fca5a5;
+        }
+
+        .flash-message.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-color: #93c5fd;
+        }
+
+        .flash-message.warning {
+            background: #fef9c3;
+            color: #854d0e;
+            border-color: #fde047;
+        }
+
+        .flash-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: inherit;
+        }
+
+        /* ─── Scroll Reveal Animation ─── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 768px) {
+            nav {
+                padding: 0 20px;
+            }
+
+            nav .nav-left {
+                gap: 20px;
+            }
+
+            nav .nav-links {
+                gap: 16px;
+            }
+
+            nav .nav-links a {
+                font-size: 0.75rem;
+            }
+
+            main {
+                padding: 60px 20px;
+            }
+
+            .card-body {
+                padding: 20px;
+            }
+
+            .card-header {
+                padding: 16px 20px;
+            }
+
+            label {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
 </head>
 <body>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm sticky-top">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/">CampusSync – ASM CSIT Complaint Portal</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    {% if current_user.is_authenticated %}
-                        {% if current_user.role == 'admin' %}
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a></li>
-                        {% elif current_user.role == 'staff' %}
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('staff.dashboard') }}">Staff Tasks</a></li>
-                        {% else %}
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('student.feed') }}">Browse Complaints</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('student.dashboard') }}">My Complaints</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('student.new_complaint') }}">New Complaint</a></li>
-                        {% endif %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Logout ({{ current_user.username }})</a></li>
+    <nav>
+        <div class="nav-left">
+            <a class="nav-logo" href="/">CampusSync</a>
+            <ul class="nav-links">
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role == 'admin' %}
+                        <li><a href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a></li>
+                    {% elif current_user.role == 'staff' %}
+                        <li><a href="{{ url_for('staff.dashboard') }}">Staff Tasks</a></li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Register</a></li>
+                        <li><a href="{{ url_for('student.feed') }}">Browse</a></li>
+                        <li><a href="{{ url_for('student.dashboard') }}">My Complaints</a></li>
+                        <li><a href="{{ url_for('student.new_complaint') }}">New Complaint</a></li>
                     {% endif %}
-                    <li class="nav-item dropdown ms-lg-2 mt-2 mt-lg-0">
-                        <button class="btn btn-outline-light btn-sm mt-1 dropdown-toggle" id="themeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span id="theme-icon">💻</span> Theme
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown">
-                            <li><a class="dropdown-item theme-switcher" href="#" data-theme="light">☀️ Light</a></li>
-                            <li><a class="dropdown-item theme-switcher" href="#" data-theme="dark">🌙 Dark</a></li>
-                            <li><a class="dropdown-item theme-switcher" href="#" data-theme="system">💻 System</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="nav-right">
+            {% if current_user.is_authenticated %}
+                <span style="font-size: 0.8rem; color: #5a5750; padding: 4px 12px; background: var(--off); border-radius: 100px;">{{ current_user.role.title() }}</span>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-ghost">Logout</a>
+            {% endif %}
         </div>
     </nav>
 
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        <span>{{ message }}</span>
+                        <button class="flash-close" onclick="this.parentElement.remove();">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-    <main class="container">
-        <div class="row">
-            <div class="col-md-12">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} alert-dismissible fade show">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-                {% block content %}{% endblock %}
-            </div>
-        </div>
+        {% block content %}{% endblock %}
     </main>
 
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Scroll reveal animation
+        const reveals = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        reveals.forEach(el => observer.observe(el));
+    </script>
 </body>
 </html>

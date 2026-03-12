@@ -1,130 +1,140 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">{{ complaint.title }}</h4>
-                <div>
-                    <span class="badge bg-secondary me-2">{{ complaint.category }}</span>
+<div style="display: grid; grid-template-columns: 1fr 300px; gap: 32px;">
+    <div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+                    <div>
+                        <h2 style="margin-bottom: 12px;">{{ complaint.title }}</h2>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <span class="badge" style="background: var(--off); color: var(--ink);">{{ complaint.category }}</span>
+                            {% if complaint.status == 'Pending' %}
+                            <span class="badge status-pending">{{ complaint.status }}</span>
+                            {% elif complaint.status == 'In Progress' %}
+                            <span class="badge status-in-progress">{{ complaint.status }}</span>
+                            {% elif complaint.status == 'Resolved' %}
+                            <span class="badge status-resolved">{{ complaint.status }}</span>
+                            {% else %}
+                            <span class="badge" style="background: #fee2e2; color: #dc2626;">{{ complaint.status }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
                     {% if current_user.role == 'student' %}
-                    <form action="{{ url_for('student.upvote', complaint_id=complaint.id) }}" method="POST" class="d-inline">
+                    <form action="{{ url_for('student.upvote', complaint_id=complaint.id) }}" method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                        <button type="submit" class="btn btn-sm {% if has_upvoted %}btn-primary{% else %}btn-outline-primary{% endif %}">
-                            👍 {{ complaint.upvotes|length }}
+                        <button type="submit" class="btn {% if has_upvoted %}btn-primary{% else %}btn-ghost{% endif %}" style="padding: 8px 14px;">
+                            {{ complaint.upvotes|length }}
                         </button>
                     </form>
                     {% else %}
-                    <span class="badge bg-body-tertiary text-body border">👍 {{ complaint.upvotes|length }}</span>
+                    <span class="badge" style="background: var(--off); color: var(--ink); padding: 8px 14px;">{{ complaint.upvotes|length }}</span>
                     {% endif %}
                 </div>
-            </div>
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <strong>Date Posted:</strong> {{ complaint.date_posted.strftime('%Y-%m-%d %H:%M') }}
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--stone);">
+                    <div>
+                        <p style="color: var(--mid); font-size: 0.85rem; margin-bottom: 4px;">Date Posted</p>
+                        <p style="font-weight: 500;">{{ complaint.date_posted.strftime('%Y-%m-%d %H:%M') }}</p>
                     </div>
-                    <div class="col-md-6 text-md-end">
-                        <strong>Status:</strong>
-                        {% if complaint.status == 'Pending' %}
-                        <span class="badge bg-warning text-dark">{{ complaint.status }}</span>
-                        {% elif complaint.status == 'In Progress' %}
-                        <span class="badge bg-info text-dark">{{ complaint.status }}</span>
-                        {% elif complaint.status == 'Resolved' %}
-                        <span class="badge bg-success">{{ complaint.status }}</span>
-                        {% else %}
-                        <span class="badge bg-danger">{{ complaint.status }}</span>
-                        {% endif %}
+                    <div>
+                        <p style="color: var(--mid); font-size: 0.85rem; margin-bottom: 4px;">Priority</p>
+                        <p style="font-weight: 500;">{{ complaint.priority }}</p>
                     </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <strong>Priority:</strong> {{ complaint.priority }}
-                    </div>
-                    <div class="col-md-6 text-md-end">
-                        <strong>Location:</strong> {{ complaint.location }}
+                    <div>
+                        <p style="color: var(--mid); font-size: 0.85rem; margin-bottom: 4px;">Location</p>
+                        <p style="font-weight: 500;">{{ complaint.location }}</p>
                     </div>
                 </div>
 
-                <hr>
-                <h5>Description</h5>
-                <p style="white-space: pre-wrap;">{{ complaint.description }}</p>
+                <div style="margin-bottom: 24px;">
+                    <h4 style="margin-bottom: 12px;">Description</h4>
+                    <p style="white-space: pre-wrap; color: var(--ink);">{{ complaint.description }}</p>
+                </div>
 
                 {% if complaint.image_file %}
-                <hr>
-                <h5>Evidence</h5>
-                <img src="{{ url_for('static', filename='uploads/' + complaint.image_file) }}" class="img-fluid rounded"
-                    alt="Complaint Image" style="max-height: 400px; object-fit: contain;">
+                <div style="margin-bottom: 24px;">
+                    <h4 style="margin-bottom: 12px;">Evidence Image</h4>
+                    <img src="{{ url_for('static', filename='uploads/' + complaint.image_file) }}" alt="Evidence" style="max-width: 100%; height: auto; border-radius: 10px; max-height: 400px; object-fit: contain; border: 1px solid var(--stone);">
+                </div>
                 {% endif %}
             </div>
             {% if current_user.role == 'student' %}
-            <div class="card-footer">
-                <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+            <div class="card-footer" style="display: flex; gap: 12px;">
+                <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary">Back</a>
                 {% if complaint.status == 'Pending' %}
-                <a href="{{ url_for('student.edit_complaint', complaint_id=complaint.id) }}"
-                    class="btn btn-warning">Edit</a>
+                <a href="{{ url_for('student.edit_complaint', complaint_id=complaint.id) }}" class="btn btn-primary">Edit</a>
                 {% endif %}
             </div>
             {% endif %}
         </div>
-    </div>
-    <!-- Comments section below the complaint card inside the same left col-md-8 column -->
+
         <!-- Comments Card -->
-        <div class="card shadow-sm mt-4 mb-4">
-            <div class="card-header bg-secondary text-white">
-                <h5 class="mb-0">Comments / Thread</h5>
+        <div class="card">
+            <div class="card-header">
+                <h4>Comments & Updates</h4>
             </div>
             <div class="card-body">
                 {% if complaint.comments %}
                     {% for comment in complaint.comments|sort(attribute='created_at') %}
-                    <div class="mb-3 border-bottom pb-2">
-                        <div class="d-flex justify-content-between">
-                            <strong>{{ comment.author.username }} <span class="badge bg-info text-dark">{{ comment.author.role }}</span></strong>
-                            <small class="text-muted">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                    <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--stone);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <div>
+                                <strong>{{ comment.author.username }}</strong>
+                                <span class="badge" style="background: var(--accent-soft); color: var(--accent); margin-left: 8px;">{{ comment.author.role }}</span>
+                            </div>
+                            <small style="color: var(--mid);">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
                         </div>
-                        <p class="mb-0 mt-1" style="white-space: pre-wrap;">{{ comment.body }}</p>
+                        <p style="white-space: pre-wrap; color: var(--ink);">{{ comment.body }}</p>
                     </div>
                     {% endfor %}
                 {% else %}
-                    <p class="text-muted">No comments yet. Be the first to comment!</p>
+                    <p style="color: var(--mid>; text-align: center; padding: 20px 0;">No comments yet. Be the first to comment!</p>
                 {% endif %}
 
                 {% if current_user.is_authenticated %}
-                <form action="{{ url_for('student.post_comment', complaint_id=complaint.id) }}" method="POST" class="mt-3">
+                <form action="{{ url_for('student.post_comment', complaint_id=complaint.id) }}" method="POST" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--stone);">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                    <div class="mb-2">
-                        <textarea name="body" class="form-control" rows="3" placeholder="Add a comment..." required></textarea>
+                    <div class="form-group">
+                        <label for="body">Add a Comment</label>
+                        <textarea id="body" name="body" rows="3" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-sm">Post Comment</button>
+                    <button type="submit" class="btn btn-primary">Post Comment</button>
                 </form>
                 {% endif %}
             </div>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-info text-dark">
-                <h5 class="mb-0">Status History</h5>
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h4>Status History</h4>
             </div>
-            <div class="card-body p-0">
-                <ul class="list-group list-group-flush">
-                    {% for h in complaint.history|sort(attribute='date_changed', reverse=True) %}
-                    <li class="list-group-item">
-                        <div class="d-flex justify-content-between w-100">
-                            <h6 class="mb-1">{{ h.new_status }}</h6>
-                            <small class="text-muted">{{ h.date_changed.strftime('%Y-%m-%d %H:%M') }}</small>
-                        </div>
-                        {% if h.notes %}
-                        <p class="mb-1 small">Note: {{ h.notes }}</p>
-                        {% endif %}
-                    </li>
-                    {% else %}
-                    <li class="list-group-item text-muted text-center pt-3 pb-3">No history recorded yet.</li>
-                    {% endfor %}
-                </ul>
+            <div class="card-body" style="padding: 0;">
+                {% for h in complaint.history|sort(attribute='date_changed', reverse=True) %}
+                <div style="padding: 16px; border-bottom: 1px solid var(--stone);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <h5 style="margin-bottom: 4px;">{{ h.new_status }}</h5>
+                        <small style="color: var(--mid); font-size: 0.75rem;">{{ h.date_changed.strftime('%Y-%m-%d') }}</small>
+                    </div>
+                    {% if h.notes %}
+                    <p style="font-size: 0.85rem; color: var(--mid); margin: 8px 0 0 0;">{{ h.notes }}</p>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div style="padding: 20px; text-align: center; color: var(--mid);">
+                    <small>No history recorded yet.</small>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
 </div>
+
+@media (max-width: 768px) {
+    .grid-2col {
+        grid-template-columns: 1fr !important;
+    }
+}
 {% endblock %}
