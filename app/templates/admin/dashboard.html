@@ -133,9 +133,9 @@
                     <td>{{ complaint.date_posted.strftime('%Y-%m-%d') }}</td>
                     <td>{{ complaint.author.username }}</td>
                     <td>{{ complaint.assignee.username if complaint.assignee else 'Unassigned' }}</td>
-                    <td style="display: flex; gap: 6px;" onclick="event.stopPropagation();">
-                        <button type="button" class="btn btn-ghost" style="padding: 4px 10px; font-size: 0.75rem;" onclick="openModal('viewModal{{ complaint.id }}')">View</button>
-                        <button type="button" class="btn btn-ghost" style="padding: 4px 10px; font-size: 0.75rem;" onclick="openModal('assignModal{{ complaint.id }}')">Assign</button>
+                    <td style="white-space: nowrap; vertical-align: middle;" onclick="event.stopPropagation();">
+                        <button type="button" class="btn btn-ghost" style="padding: 4px 10px; font-size: 0.75rem; margin-right: 4px;" onclick="openModal('viewModal{{ complaint.id }}')">View</button>
+                        <button type="button" class="btn btn-ghost" style="padding: 4px 10px; font-size: 0.75rem; margin-right: 4px;" onclick="openModal('assignModal{{ complaint.id }}')">Assign</button>
                         <button type="button" class="btn btn-danger" style="padding: 4px 10px; font-size: 0.75rem;" onclick="openModal('deleteModal{{ complaint.id }}')">Delete</button>
                     </td>
                 </tr>
@@ -255,23 +255,23 @@
 <!-- Pending Complaints Modal -->
 <div id="pendingModal" class="modal" style="display: none;">
     <div class="modal-overlay" onclick="closeModal('pendingModal')"></div>
-    <div class="modal-content" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+    <div class="modal-content" style="max-width: 600px;">
         <div class="modal-header">
             <h3 style="margin: 0;">Pending Complaints</h3>
             <button type="button" class="modal-close" onclick="closeModal('pendingModal')">&times;</button>
         </div>
-        <div class="modal-body" style="padding: 0;">
+        <div class="modal-body" style="padding: 0; max-height: 60vh; overflow-y: auto;">
             {% set pending_found = false %}
             {% for complaint in complaints %}
                 {% if complaint.status == 'Pending' %}
                     {% set pending_found = true %}
                     <div style="padding: 16px; border-bottom: 1px solid var(--stone); cursor: pointer;" onclick="closeModal('pendingModal'); openModal('viewModal{{ complaint.id }}')">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                            <h5 style="margin: 0;\">#{{ complaint.id }} - {{ complaint.title }}</h5>
+                            <h5 style="margin: 0;">#{{ complaint.id }} - {{ complaint.title }}</h5>
                             <small style="color: var(--mid);">{{ complaint.date_posted.strftime('%Y-%m-%d') }}</small>
                         </div>
-                        <p style="color: var(--ink); font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin: 0 0 8px 0;\">{{ complaint.description }}</p>
-                        <small style="color: #dc2626;\">Priority: {{ complaint.priority }}</small>
+                        <p style="color: var(--ink); font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin: 0 0 8px 0;">{{ complaint.description }}</p>
+                        <small style="color: #dc2626;">Priority: {{ complaint.priority }}</small>
                     </div>
                 {% endif %}
             {% endfor %}
@@ -286,22 +286,22 @@
 <!-- Resolved Complaints Modal -->
 <div id="resolvedModal" class="modal" style="display: none;">
     <div class="modal-overlay" onclick="closeModal('resolvedModal')"></div>
-    <div class="modal-content" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+    <div class="modal-content" style="max-width: 600px;">
         <div class="modal-header">
             <h3 style="margin: 0;">Resolved Complaints</h3>
             <button type="button" class="modal-close" onclick="closeModal('resolvedModal')">&times;</button>
         </div>
-        <div class="modal-body" style="padding: 0;">
+        <div class="modal-body" style="padding: 0; max-height: 60vh; overflow-y: auto;">
             {% set resolved_found = false %}
             {% for complaint in complaints %}
                 {% if complaint.status == 'Resolved' %}
                     {% set resolved_found = true %}
                     <div style="padding: 16px; border-bottom: 1px solid var(--stone); cursor: pointer;" onclick="closeModal('resolvedModal'); openModal('viewModal{{ complaint.id }}')">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                            <h5 style="margin: 0;\">#{{ complaint.id }} - {{ complaint.title }}</h5>
+                            <h5 style="margin: 0;">#{{ complaint.id }} - {{ complaint.title }}</h5>
                             <small style="color: var(--mid);">{{ complaint.date_posted.strftime('%Y-%m-%d') }}</small>
                         </div>
-                        <p style="color: var(--ink); font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin: 0 0 8px 0;\">{{ complaint.description }}</p>
+                        <p style="color: var(--ink); font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin: 0 0 8px 0;">{{ complaint.description }}</p>
                         <small style="color: var(--mid);">Assigned to: {{ complaint.assignee.username if complaint.assignee else 'Unknown' }}</small>
                     </div>
                 {% endif %}
@@ -424,7 +424,7 @@ new Chart(statusCtx, {
                 '#dbeafe', // In Progress
                 '#dcfce7'  // Resolved
             ],
-            borderColor: var(--white),
+            borderColor: '#ffffff',
             borderWidth: 2
         }]
     },
