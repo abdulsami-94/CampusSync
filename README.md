@@ -1,6 +1,6 @@
 # CampusSync — College Complaint Management System
 
-A Flask-based web application for managing student complaints in educational institutions, specifically designed for ASM CSIT college viva presentation.
+A Flask-based web application built to solve a real institutional problem — untracked, unresolved student complaints that fall through the cracks in college administration. CampusSync gives students a structured channel to raise issues and gives administrators full visibility and control over resolution.
 
 ## Features
 
@@ -173,17 +173,14 @@ CampusSync/
 - Session-based authentication
 - Error handling with custom 403/404/500 pages
 
-## For Viva Presentation
+## Why CampusSync Exists
 
-This application demonstrates:
-- Full-stack web development with Flask
-- Database design and ORM usage
-- User authentication and authorization
-- File handling and security
-- Chart-based dashboard analytics
-- Upvoting and commenting system
-- Modern web development practices
-- Clean, maintainable code architecture
+In most institutions, student complaints are handled informally — emails get lost, verbal complaints are forgotten, and nothing is tracked. CampusSync solves this by:
+- Giving every complaint a trackable lifecycle: **Pending → In Progress → Resolved**
+- Letting students upvote issues so high-impact problems are prioritised
+- Giving admins a real-time dashboard with analytics to spot recurring problems
+- Ensuring accountability by assigning complaints to specific staff members
+- Preserving data integrity with soft deletes and role-based access control
 
 ## Future Enhancements
 
@@ -194,4 +191,4 @@ This application demonstrates:
 
 ## License
 
-This project is developed for educational purposes as part of ASM CSIT college curriculum.
+This project is open-source and built to address real institutional needs. Contributions and adaptations for other institutions are welcome.
