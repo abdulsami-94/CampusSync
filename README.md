@@ -1,6 +1,22 @@
 # CampusSync — College Complaint Management System
 
+> **Live Demo:** [https://campussync-1668.onrender.com](https://campussync-1668.onrender.com)
+
 A Flask-based web application built to solve a real institutional problem — untracked, unresolved student complaints that fall through the cracks in college administration. CampusSync gives students a structured channel to raise issues and gives administrators full visibility and control over resolution.
+
+## App Preview
+
+| Landing Page | Admin Dashboard |
+| :---: | :---: |
+| ![Landing Page](./docs/screenshots/landing-page.png) | ![Admin Dashboard](./docs/screenshots/admin-dashboard.png) |
+
+| All Complaints | New Complaint | Staff Dashboard |
+| :---: | :---: | :---: |
+| ![All Complaints](./docs/screenshots/all-complaints.png) | ![New Complaint](./docs/screenshots/new-complaint-form.png) | ![Staff Dashboard](./docs/screenshots/staff-view.png) |
+
+---
+
+
 
 ## Features
 
@@ -17,12 +33,16 @@ A Flask-based web application built to solve a real institutional problem — un
 
 ## Technology Stack
 
-- **Backend**: Flask 3.0, SQLAlchemy, SQLite
-- **Authentication**: Flask-Login, Flask-Bcrypt
-- **Forms**: Flask-WTF with CSRF protection
-- **Frontend**: Vanilla CSS, HTML5, Chart.js
-- **File Handling**: UUID-based secure uploads
-- **WSGI Server**: Gunicorn 22.0.0 (production)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white)
+![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
+![Chart.js](https://img.shields.io/badge/chart.js-F5788D.svg?style=for-the-badge&logo=chart.js&logoColor=white)
+![Render](https://img.shields.io/badge/Render-%2346E3B7.svg?style=for-the-badge&logo=render&logoColor=white)
+
+---
+
 
 ## Installation & Setup
 
@@ -49,7 +69,13 @@ A Flask-based web application built to solve a real institutional problem — un
    pip install -r requirements.txt
    ```
 
-4. **Seed the database with demo data**:
+4. **Setup environment variables**:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your local configuration
+   ```
+
+5. **Seed the database with demo data**:
    ```bash
    python seed_db.py
    ```
