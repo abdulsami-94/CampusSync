@@ -60,3 +60,6 @@ app/static/uploads/
 
 # Logs
 *.log
+
+# Local scratch file
+q.txt
