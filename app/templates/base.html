@@ -61,7 +61,7 @@
         p, body { font-size: 0.95rem; line-height: 1.6; }
 
         /* ─── Navbar ─── */
-        nav {
+        nav.site-nav {
             position: fixed;
             top: 0;
             left: 0;
@@ -78,13 +78,13 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.07);
         }
 
-        nav .nav-left {
+        nav.site-nav .nav-left {
             display: flex;
             align-items: center;
             gap: 40px;
         }
 
-        nav .nav-logo {
+        nav.site-nav .nav-logo {
             font-family: 'DM Serif Display', serif;
             font-size: 1.1rem;
             letter-spacing: -0.01em;
@@ -93,24 +93,24 @@
             font-weight: 500;
         }
 
-        nav .nav-links {
+        nav.site-nav .nav-links {
             display: flex;
             list-style: none;
             gap: 32px;
         }
 
-        nav .nav-links a {
+        nav.site-nav .nav-links a {
             font-size: 0.875rem;
             color: #5a5750;
             text-decoration: none;
             transition: color 0.2s;
         }
 
-        nav .nav-links a:hover {
+        nav.site-nav .nav-links a:hover {
             color: var(--ink);
         }
 
-        nav .nav-right {
+        nav.site-nav .nav-right {
             display: flex;
             align-items: center;
             gap: 16px;
@@ -403,19 +403,19 @@
 
         /* ─── Responsive ─── */
         @media (max-width: 768px) {
-            nav {
+            nav.site-nav {
                 padding: 0 20px;
             }
 
-            nav .nav-left {
+            nav.site-nav .nav-left {
                 gap: 20px;
             }
 
-            nav .nav-links {
+            nav.site-nav .nav-links {
                 gap: 16px;
             }
 
-            nav .nav-links a {
+            nav.site-nav .nav-links a {
                 font-size: 0.75rem;
             }
 
@@ -438,7 +438,7 @@
     </style>
 </head>
 <body>
-    <nav>
+    <nav class="site-nav">
         <div class="nav-left">
             <a class="nav-logo" href="/">CampusSync</a>
             <ul class="nav-links">
